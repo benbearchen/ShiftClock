@@ -21,6 +21,7 @@ local.properties
 
 # Eclipse temporary files
 .metadata
+.settings
 
 # other files
 *~
