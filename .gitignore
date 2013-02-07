@@ -18,3 +18,10 @@ local.properties
 # Eclipse project files
 .classpath
 .project
+
+# Eclipse temporary files
+.metadata
+
+# other files
+*~
+
