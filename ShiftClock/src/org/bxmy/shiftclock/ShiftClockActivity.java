@@ -1,5 +1,6 @@
 package org.bxmy.shiftclock;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -10,6 +11,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +38,7 @@ public class ShiftClockActivity extends Activity {
         disable.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 cancelAlarmTime();
+                stopAlarmRing();
             }
         });
     }
@@ -90,6 +96,7 @@ public class ShiftClockActivity extends Activity {
                 Log.i("shiftclock", "alarm");
                 // 第1步中设置的闹铃时间到，这里可以弹出闹铃提示并播放响铃
                 // 可以继续设置下一次闹铃时间;
+                playAlarmRing(context);
                 return;
             }
         }
@@ -123,6 +130,32 @@ public class ShiftClockActivity extends Activity {
         }
     }
 
+    private static void playAlarmRing(Context context) {
+        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        try {
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setDataSource(context, uri);
+            final AudioManager audioManager = (AudioManager) context
+                    .getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager.getStreamVolume(AudioManager.STREAM_ALARM) != 0) {
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+                mMediaPlayer.setLooping(true);
+                mMediaPlayer.prepare();
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mMediaPlayer.start();
+    }
+    
+    private static void stopAlarmRing() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+        }
+    }
+    
     private static String ACTION_ALARM = "org.bxmy.shiftclock.action.alarm";
 
     private static String ACTION_SHUTDOWN = "org.bxmy.shiftclock.action.shutdown";
@@ -136,4 +169,6 @@ public class ShiftClockActivity extends Activity {
             shutdown(true);
         }
     };
+    
+    private static MediaPlayer mMediaPlayer;
 }
