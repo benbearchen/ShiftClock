@@ -1,5 +1,8 @@
 package org.bxmy.shiftclock;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -9,6 +12,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class ShiftClockActivity extends Activity {
     /** Called when the activity is first created. */
@@ -22,14 +28,32 @@ public class ShiftClockActivity extends Activity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_SHUTDOWN);
         registerReceiver(this.mShutdownReceiver, filter);
+
+        Button disable = (Button) findViewById(R.id.button_disable);
+        disable.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                cancelAlarmTime();
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
-        cancelAlarmTime(this);
         shutdown(false);
 
         super.onDestroy();
+    }
+
+    private void setAlarmTime(long timeInMillis) {
+        TextView label = (TextView) findViewById(R.id.text_alarmTime);
+        label.setText(R.string.label_alarmTime);
+        if (timeInMillis != 0) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  HH:mm");
+            String t = sdf.format(new Date(timeInMillis));
+            label.append(t);
+        } else {
+            label.append("ç¦ç”¨");
+        }
     }
 
     private void setAlarmTime(Context context, long timeInMillis, long interval) {
@@ -41,6 +65,11 @@ public class ShiftClockActivity extends Activity {
                 PendingIntent.FLAG_CANCEL_CURRENT);
         am.setRepeating(AlarmManager.RTC_WAKEUP, timeInMillis, interval, sender);
         this.mAlarmSender = sender;
+        setAlarmTime(timeInMillis);
+    }
+
+    private void cancelAlarmTime() {
+        cancelAlarmTime(this);
     }
 
     private void cancelAlarmTime(Context context) {
@@ -52,14 +81,15 @@ public class ShiftClockActivity extends Activity {
                 .getSystemService(Context.ALARM_SERVICE);
         am.cancel(this.mAlarmSender);
         this.mAlarmSender = null;
+        setAlarmTime(0);
     }
 
     public static class AlarmReceiver extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
             if (ACTION_ALARM.equals(intent.getAction())) {
                 Log.i("shiftclock", "alarm");
-                // µÚ1²½ÖĞÉèÖÃµÄÄÖÁåÊ±¼äµ½£¬ÕâÀï¿ÉÒÔµ¯³öÄÖÁåÌáÊ¾²¢²¥·ÅÏìÁå
-                // ¿ÉÒÔ¼ÌĞøÉèÖÃÏÂÒ»´ÎÄÖÁåÊ±¼ä;
+                // ç¬¬1æ­¥ä¸­è®¾ç½®çš„é—¹é“ƒæ—¶é—´åˆ°ï¼Œè¿™é‡Œå¯ä»¥å¼¹å‡ºé—¹é“ƒæç¤ºå¹¶æ’­æ”¾å“é“ƒ
+                // å¯ä»¥ç»§ç»­è®¾ç½®ä¸‹ä¸€æ¬¡é—¹é“ƒæ—¶é—´;
                 return;
             }
         }
@@ -80,7 +110,7 @@ public class ShiftClockActivity extends Activity {
     }
 
     private void shutdown(boolean broadcast) {
-        Log.i("shiftclock", "call shutdown()" + this);
+        Log.i("shiftclock", "call shutdown() " + this);
         synchronized (ACTION_SHUTDOWN) {
             if (this.mShutdownReceiver != null) {
                 unregisterReceiver(this.mShutdownReceiver);
