@@ -41,6 +41,16 @@ public class ShiftClockActivity extends Activity {
                 stopAlarmRing();
             }
         });
+
+        Button setDuty = (Button) findViewById(R.id.button_setDuty);
+        setDuty.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(ShiftClockActivity.this, DutyListActivity.class);
+
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -149,13 +159,13 @@ public class ShiftClockActivity extends Activity {
         }
         mMediaPlayer.start();
     }
-    
+
     private static void stopAlarmRing() {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
         }
     }
-    
+
     private static String ACTION_ALARM = "org.bxmy.shiftclock.action.alarm";
 
     private static String ACTION_SHUTDOWN = "org.bxmy.shiftclock.action.shutdown";
@@ -169,6 +179,6 @@ public class ShiftClockActivity extends Activity {
             shutdown(true);
         }
     };
-    
+
     private static MediaPlayer mMediaPlayer;
 }

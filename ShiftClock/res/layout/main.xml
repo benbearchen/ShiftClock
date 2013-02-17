@@ -15,10 +15,22 @@
         android:layout_height="wrap_content"
         android:text="@string/label_alarmTime" />
 
-    <Button
-        android:id="@+id/button_disable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_disableAlarm" />
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/button_disable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_disableAlarm" />
+
+        <Button
+            android:id="@+id/button_setDuty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_setDuty" />
+    </LinearLayout>
 
 </LinearLayout>

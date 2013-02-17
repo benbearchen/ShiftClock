@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="31dp" >
+
+        <TextView
+            android:id="@+id/text_dutyName"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="DutyName"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/time_dutyStart"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:inputType="time" />
+
+        <EditText
+            android:id="@+id/time_dutyEnd"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="time" />
+    </LinearLayout>
+
+</RelativeLayout>
