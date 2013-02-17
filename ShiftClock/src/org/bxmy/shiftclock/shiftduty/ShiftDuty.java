@@ -9,7 +9,7 @@ public class ShiftDuty {
     public ShiftDuty() {
         addTestDuties();
     }
-    
+
     public String[] getDutyNames() {
         ArrayList<String> names = new ArrayList<String>();
         for (Duty duty : mDuties) {
@@ -18,7 +18,7 @@ public class ShiftDuty {
 
         return (String[]) names.toArray();
     }
-    
+
     private void addTestDuties() {
         Duty duty = new Duty();
         duty.setName("白班");

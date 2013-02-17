@@ -15,12 +15,15 @@ public class DutyListActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.duty_list);
-        
+
         GridView grid = (GridView) findViewById(R.id.grid_duty_list);
-        SimpleAdapter adapter = new SimpleAdapter(this, addTestDuties(), R.layout.duty_list_item, new String[] { "1", "2", "3"}, new int[] {R.id.text_dutyName, R.id.time_dutyStart, R.id.time_dutyEnd});
+        SimpleAdapter adapter = new SimpleAdapter(this, addTestDuties(),
+                R.layout.duty_list_item, new String[] { "1", "2", "3" },
+                new int[] { R.id.text_dutyName, R.id.time_dutyStart,
+                        R.id.time_dutyEnd });
         grid.setAdapter(adapter);
     }
-    
+
     private ArrayList<HashMap<String, Object>> addTestDuties() {
         ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<String, Object>();
