@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="31dp" >
-
+
         <TextView
             android:id="@+id/text_dutyName"
             android:layout_width="100dp"
