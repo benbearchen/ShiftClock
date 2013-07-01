@@ -40,7 +40,9 @@
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
             </intent-filter>
         </receiver>
-        <activity android:name="DutyListActivity"></activity>
+        <activity android:name="DutyListActivity" android:label="@string/label_setDuty"></activity>
+        <activity android:name="AboutActivity" android:label="@string/label_about"></activity>
+        <activity android:name="AdjustDutyActivity" android:label="@string/label_adjustDuty"></activity>
     </application>
 
 </manifest>

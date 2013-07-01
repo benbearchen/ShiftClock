@@ -7,5 +7,9 @@
     <string name="label_alarmTime">下次闹铃时间：</string>
     <string name="label_disableAlarm">禁用闹铃</string>
     <string name="label_setDuty">设置班种</string>
+    <string name="label_adjustDuty">值班调整</string>
+    <string name="label_about">关于</string>
+    <string name="label_addDuty">加班</string>
+    <string name="label_cutDuty">减班</string>
 
 </resources>

@@ -36,6 +36,7 @@ public class ShiftClockActivity extends Activity {
 
         Button disable = (Button) findViewById(R.id.button_disable);
         disable.setOnClickListener(new Button.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 cancelAlarmTime();
                 stopAlarmRing();
@@ -44,10 +45,33 @@ public class ShiftClockActivity extends Activity {
 
         Button setDuty = (Button) findViewById(R.id.button_setDuty);
         setDuty.setOnClickListener(new Button.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setClass(ShiftClockActivity.this, DutyListActivity.class);
 
+                startActivity(intent);
+            }
+        });
+        
+        Button adjustDuty = (Button) findViewById(R.id.button_adjustDuty);
+        adjustDuty.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent();
+                intent.setClass(ShiftClockActivity.this, AdjustDutyActivity.class);
+                
+                startActivity(intent);
+            }
+        });
+        
+        Button about = (Button) findViewById(R.id.button_about);
+        about.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent();
+                intent.setClass(ShiftClockActivity.this, AboutActivity.class);
+                
                 startActivity(intent);
             }
         });
