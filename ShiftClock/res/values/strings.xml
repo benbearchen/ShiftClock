@@ -11,5 +11,13 @@
     <string name="label_about">关于</string>
     <string name="label_addDuty">加班</string>
     <string name="label_cutDuty">减班</string>
+    <string name="label_duty_modify">修改</string>
+    <string name="label_ok">确定</string>
+    <string name="label_cancel">取消</string>
+    <string name="label_dutyName">班种名</string>
+    <string name="label_dutyStartTime">开始时间</string>
+    <string name="label_dutyEndTime">结束时间</string>
+    <string name="label_titleEditDuty">编辑班种</string>
+    <string name="hint_dutyName">请输入班种名字</string>
 
 </resources>

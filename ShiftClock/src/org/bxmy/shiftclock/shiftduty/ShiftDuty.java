@@ -29,10 +29,25 @@ public class ShiftDuty {
         return (String[]) names.toArray();
     }
 
+    public void addDuty(Duty duty) {
+        mDuties.add(duty);
+    }
+    
+    public void updateDuty(int index, Duty duty) {
+        mDuties.set(index, duty);
+    }
+    
     public Duty[] getDuties() {
         return (Duty[]) mDuties.toArray(new Duty[0]);
     }
 
+    public Duty getDutyInIndex(int index) { 
+        if (index < 0 || index >= mDuties.size())
+            return null;
+        
+        return mDuties.get(index);
+    }
+    
     private void load() {
         addTestDuties();
     }
