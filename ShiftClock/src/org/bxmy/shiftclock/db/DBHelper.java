@@ -1,3 +1,10 @@
+/**
+ * refer:
+ * 
+ * http://www.ibm.com/developerworks/cn/xml/x-androidstorage/
+ * 
+ */
+
 package org.bxmy.shiftclock.db;
 
 import android.content.ContentValues;
