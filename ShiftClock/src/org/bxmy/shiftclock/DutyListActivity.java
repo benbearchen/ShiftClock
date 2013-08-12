@@ -27,11 +27,6 @@ public class DutyListActivity extends Activity {
         setContentView(R.layout.duty_list);
 
         ListView list = (ListView) findViewById(R.id.list_duty);
-        SimpleAdapter adapter = new SimpleAdapter(this, initDuties(),
-                R.layout.duty_list_item, new String[] { "1", "2", "3" },
-                new int[] { R.id.text_dutyName, R.id.time_dutyStart,
-                        R.id.time_dutyEnd });
-        list.setAdapter(adapter);
         list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
@@ -52,8 +47,25 @@ public class DutyListActivity extends Activity {
             }
 
         });
+        
+        loadDuties();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadDuties();
+    }
+    
+    private void loadDuties() {
+        ListView list = (ListView) findViewById(R.id.list_duty);
+        SimpleAdapter adapter = new SimpleAdapter(this, initDuties(),
+                R.layout.duty_list_item, new String[] { "1", "2", "3" },
+                new int[] { R.id.text_dutyName, R.id.time_dutyStart,
+                        R.id.time_dutyEnd });
+        list.setAdapter(adapter);
+    }
+    
     private ArrayList<HashMap<String, Object>> initDuties() {
         ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<String, Object>();
