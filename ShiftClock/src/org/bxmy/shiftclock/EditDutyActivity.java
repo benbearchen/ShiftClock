@@ -16,6 +16,8 @@ public class EditDutyActivity extends Activity {
 
     private int mIndex = -1;
 
+    private int mDutyId = -1;
+
     private EditText mDutyName;
 
     private TimePicker mStartTime;
@@ -60,10 +62,12 @@ public class EditDutyActivity extends Activity {
 
     private void initDuty(int position) {
         Duty duty = ShiftDuty.getInstance().getDutyInIndex(mIndex);
+
         if (duty == null) {
             updateTime(mStartTime, 9 * 3600);
             updateTime(mEndTime, 18 * 3600);
         } else {
+            mDutyId = duty.getId();
             mDutyName.setText(duty.getName());
 
             updateTime(mStartTime, duty.getStartSecondsInDay());
@@ -88,22 +92,21 @@ public class EditDutyActivity extends Activity {
             return;
         }
 
+        String dutyName = mDutyName.getText().toString();
+
         int start = getTime(mStartTime);
         int end = getTime(mEndTime);
         if (end <= start)
             end += 86400; // 加一天
 
         int duration = end - start;
-        
-        Duty newDuty = new Duty();
-        newDuty.setName(mDutyName.getText().toString());
-        newDuty.setStartSecondsInDay(start);
-        newDuty.setDurationSeconds(duration);
-        
-        if (mIndex < 0)
-            ShiftDuty.getInstance().addDuty(newDuty);
-        else
-            ShiftDuty.getInstance().updateDuty(mIndex, newDuty);
+
+        if (mDutyId < 0) {
+            ShiftDuty.getInstance().newDuty(dutyName, start, duration, -1);
+        } else {
+            Duty newDuty = new Duty(mDutyId, dutyName, start, duration, -1);
+            ShiftDuty.getInstance().updateDuty(newDuty);
+        }
 
         finish();
     }

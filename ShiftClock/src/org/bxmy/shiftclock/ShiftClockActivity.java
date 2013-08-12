@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.bxmy.shiftclock.shiftduty.ShiftDuty;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -27,6 +29,8 @@ public class ShiftClockActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        ShiftDuty.getInstance().init(this);
 
         setAlarmTime(this, System.currentTimeMillis() + 20 * 1000, 10 * 1000);
 
@@ -53,25 +57,26 @@ public class ShiftClockActivity extends Activity {
                 startActivity(intent);
             }
         });
-        
+
         Button adjustDuty = (Button) findViewById(R.id.button_adjustDuty);
         adjustDuty.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent();
-                intent.setClass(ShiftClockActivity.this, AdjustDutyActivity.class);
-                
+                intent.setClass(ShiftClockActivity.this,
+                        AdjustDutyActivity.class);
+
                 startActivity(intent);
             }
         });
-        
+
         Button about = (Button) findViewById(R.id.button_about);
         about.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent();
                 intent.setClass(ShiftClockActivity.this, AboutActivity.class);
-                
+
                 startActivity(intent);
             }
         });

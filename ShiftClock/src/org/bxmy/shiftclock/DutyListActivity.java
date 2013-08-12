@@ -47,7 +47,7 @@ public class DutyListActivity extends Activity {
             }
 
         });
-        
+
         loadDuties();
     }
 
@@ -56,7 +56,7 @@ public class DutyListActivity extends Activity {
         super.onResume();
         loadDuties();
     }
-    
+
     private void loadDuties() {
         ListView list = (ListView) findViewById(R.id.list_duty);
         SimpleAdapter adapter = new SimpleAdapter(this, initDuties(),
@@ -65,7 +65,7 @@ public class DutyListActivity extends Activity {
                         R.id.time_dutyEnd });
         list.setAdapter(adapter);
     }
-    
+
     private ArrayList<HashMap<String, Object>> initDuties() {
         ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<String, Object>();

@@ -2,22 +2,36 @@ package org.bxmy.shiftclock.shiftduty;
 
 import java.util.ArrayList;
 
+import org.bxmy.shiftclock.db.DBHelper;
+import org.bxmy.shiftclock.db.DutyTable;
+
+import android.content.Context;
+import android.util.Log;
+
 public class ShiftDuty {
 
     private static ShiftDuty sShiftDuty;
 
     private ArrayList<Duty> mDuties = new ArrayList<Duty>();
 
+    private DBHelper mDb;
+
+    private DutyTable mDutyTable;
+
     public static synchronized ShiftDuty getInstance() {
         if (sShiftDuty == null) {
             sShiftDuty = new ShiftDuty();
-            sShiftDuty.load();
         }
 
         return sShiftDuty;
     }
 
     private ShiftDuty() {
+    }
+
+    public void init(Context context) {
+        initDb(context);
+        loadDuties();
     }
 
     public String[] getDutyNames() {
@@ -29,34 +43,47 @@ public class ShiftDuty {
         return (String[]) names.toArray();
     }
 
-    public void addDuty(Duty duty) {
-        mDuties.add(duty);
+    public Duty newDuty(String name, int startSecondsInDay,
+            int durationSeconds, int alarmBeforeSeconds) {
+        if (mDb != null && mDutyTable != null) {
+            Duty duty = mDutyTable.insert(name, startSecondsInDay,
+                    durationSeconds, alarmBeforeSeconds);
+            mDuties.add(duty);
+            return duty;
+        }
+
+        Log.e("DB", "newDuty(): db not valid");
+        return null;
     }
-    
-    public void updateDuty(int index, Duty duty) {
-        mDuties.set(index, duty);
+
+    public void updateDuty(Duty duty) {
+        for (int i = 0; i < mDuties.size(); ++i) {
+            if (mDuties.get(i).getId() == duty.getId())
+                mDuties.set(i, duty);
+        }
     }
-    
+
     public Duty[] getDuties() {
         return (Duty[]) mDuties.toArray(new Duty[0]);
     }
 
-    public Duty getDutyInIndex(int index) { 
+    public Duty getDutyInIndex(int index) {
         if (index < 0 || index >= mDuties.size())
             return null;
-        
+
         return mDuties.get(index);
     }
-    
-    private void load() {
-        addTestDuties();
+
+    private void initDb(Context context) {
+        mDb = new DBHelper(context, "shiftduty", 1);
+
+        mDutyTable = new DutyTable();
+        mDb.addTable(mDutyTable);
     }
 
-    private void addTestDuties() {
-        Duty duty = new Duty();
-        duty.setName("白班");
-        duty.setStartSecondsInDay(3600 * 9 + 1800);
-        duty.setDurationSeconds(3600 * 9);
-        mDuties.add(duty);
+    private void loadDuties() {
+        if (mDb != null && mDutyTable != null) {
+            mDuties = mDutyTable.selectAll();
+        }
     }
 }
