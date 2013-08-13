@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -24,6 +27,10 @@ public class EditDutyActivity extends Activity {
 
     private TimePicker mEndTime;
 
+    private CheckBox mDefaultAlarm;
+
+    private TimePicker mAlarmBefore;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +46,28 @@ public class EditDutyActivity extends Activity {
     private void bind() {
         mDutyName = (EditText) findViewById(R.id.edit_dutyName);
         mStartTime = (TimePicker) findViewById(R.id.time_startTime);
+        mStartTime.setIs24HourView(true);
         mEndTime = (TimePicker) findViewById(R.id.time_endTime);
+        mEndTime.setIs24HourView(true);
+
+        mDefaultAlarm = (CheckBox) findViewById(R.id.checkbox_defaultAlarm);
+        mAlarmBefore = (TimePicker) findViewById(R.id.time_alarmBefore);
+        mAlarmBefore.setIs24HourView(true);
+
+        mDefaultAlarm.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                    boolean isChecked) {
+                if (isChecked) {
+                    mAlarmBefore.setEnabled(false);
+                } else {
+                    mAlarmBefore.setEnabled(true);
+                }
+
+            }
+
+        });
 
         Button ok = (Button) findViewById(R.id.button_ok);
         ok.setOnClickListener(new OnClickListener() {
@@ -66,6 +94,9 @@ public class EditDutyActivity extends Activity {
         if (duty == null) {
             updateTime(mStartTime, 9 * 3600);
             updateTime(mEndTime, 18 * 3600);
+
+            mDefaultAlarm.setChecked(true);
+            updateTime(mAlarmBefore, 1800);
         } else {
             mDutyId = duty.getId();
             mDutyName.setText(duty.getName());
@@ -73,6 +104,14 @@ public class EditDutyActivity extends Activity {
             updateTime(mStartTime, duty.getStartSecondsInDay());
             updateTime(mEndTime,
                     duty.getStartSecondsInDay() + duty.getDurationSeconds());
+
+            if (duty.getAlarmBeforeSeconds() >= 0) {
+                mDefaultAlarm.setChecked(false);
+                updateTime(mAlarmBefore, duty.getAlarmBeforeSeconds());
+            } else {
+                mDefaultAlarm.setChecked(true);
+                updateTime(mAlarmBefore, 1800);
+            }
         }
     }
 
@@ -82,7 +121,7 @@ public class EditDutyActivity extends Activity {
     }
 
     private int getTime(TimePicker picker) {
-        return picker.getCurrentHour() * 3600 + picker.getCurrentMinute();
+        return picker.getCurrentHour() * 3600 + picker.getCurrentMinute() * 60;
     }
 
     private void onOK() {
@@ -101,10 +140,17 @@ public class EditDutyActivity extends Activity {
 
         int duration = end - start;
 
+        int alarmBefore = -1;
+        if (!mDefaultAlarm.isChecked()) {
+            alarmBefore = getTime(mAlarmBefore);
+        }
+
         if (mDutyId < 0) {
-            ShiftDuty.getInstance().newDuty(dutyName, start, duration, -1);
+            ShiftDuty.getInstance().newDuty(dutyName, start, duration,
+                    alarmBefore);
         } else {
-            Duty newDuty = new Duty(mDutyId, dutyName, start, duration, -1);
+            Duty newDuty = new Duty(mDutyId, dutyName, start, duration,
+                    alarmBefore);
             ShiftDuty.getInstance().updateDuty(newDuty);
         }
 

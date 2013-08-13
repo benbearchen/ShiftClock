@@ -69,4 +69,16 @@ public class DutyTable extends DBHelper.ITableBase {
         return new Duty(id, name, startSecondsInDay, durationSeconds,
                 alarmBeforeSeconds);
     }
+
+    public void update(Duty duty) {
+        ContentValues values = new ContentValues();
+        values.put("name", duty.getName());
+        values.put("start", duty.getStartSecondsInDay());
+        values.put("duration", duty.getDurationSeconds());
+        values.put("alarmBefore", duty.getAlarmBeforeSeconds());
+
+        String where = "_id=?";
+        String[] whereArgs = new String[] { String.valueOf(duty.getId()) };
+        this.mDb.update(this, values, where, whereArgs);
+    }
 }

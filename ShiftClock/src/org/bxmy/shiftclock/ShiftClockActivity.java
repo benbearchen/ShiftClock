@@ -86,6 +86,8 @@ public class ShiftClockActivity extends Activity {
     protected void onDestroy() {
         shutdown(false);
 
+        ShiftDuty.getInstance().close();
+
         super.onDestroy();
     }
 

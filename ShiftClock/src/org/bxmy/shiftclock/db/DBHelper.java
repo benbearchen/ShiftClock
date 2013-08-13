@@ -73,4 +73,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public int insert(ITableBase table, ContentValues values) {
         return (int) this.mDb.insert(table.getTableName(), null, values);
     }
+
+    public void update(ITableBase table, ContentValues values, String where,
+            String[] whereArgs) {
+        this.mDb.update(table.getTableName(), values, where, whereArgs);
+    }
 }

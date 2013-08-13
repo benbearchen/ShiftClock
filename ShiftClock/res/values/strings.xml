@@ -19,5 +19,7 @@
     <string name="label_dutyEndTime">结束时间</string>
     <string name="label_titleEditDuty">编辑班种</string>
     <string name="hint_dutyName">请输入班种名字</string>
+    <string name="label_dutyAlarmBefore">提前闹铃</string>
+    <string name="label_dutyDefaultAlarm">使用默认的提前闹铃设置</string>
 
 </resources>

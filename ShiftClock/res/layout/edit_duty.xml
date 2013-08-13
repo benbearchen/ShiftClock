@@ -79,4 +79,27 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <CheckBox
+        android:id="@+id/checkbox_defaultAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_dutyDefaultAlarm" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_dutyAlarmBefore" />
+
+        <TimePicker
+            android:id="@+id/time_alarmBefore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </LinearLayout>

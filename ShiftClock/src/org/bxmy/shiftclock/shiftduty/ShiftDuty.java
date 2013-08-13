@@ -34,6 +34,12 @@ public class ShiftDuty {
         loadDuties();
     }
 
+    public void close() {
+        if (this.mDb != null) {
+            this.mDb.close();
+        }
+    }
+
     public String[] getDutyNames() {
         ArrayList<String> names = new ArrayList<String>();
         for (Duty duty : mDuties) {
@@ -58,8 +64,12 @@ public class ShiftDuty {
 
     public void updateDuty(Duty duty) {
         for (int i = 0; i < mDuties.size(); ++i) {
-            if (mDuties.get(i).getId() == duty.getId())
+            if (mDuties.get(i).getId() == duty.getId()) {
                 mDuties.set(i, duty);
+                if (this.mDb != null && this.mDutyTable != null) {
+                    this.mDutyTable.update(duty);
+                }
+            }
         }
     }
 
