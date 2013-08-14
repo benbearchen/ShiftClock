@@ -6,10 +6,19 @@ public class Duty {
 
     private String mName;
 
+    /**
+     * 自然天内值班开始时间
+     */
     private int mStartSecondsInDay;
 
+    /**
+     * 值班持续时间
+     */
     private int mDurationSeconds;
 
+    /**
+     * 相对于班种开始提前闹铃的时间。如果小于 0 表示使用默认闹铃设置。
+     */
     private int mAlarmBeforeSeconds;
 
     public Duty(int id) {

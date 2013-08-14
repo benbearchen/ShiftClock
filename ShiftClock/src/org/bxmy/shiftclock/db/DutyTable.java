@@ -44,11 +44,12 @@ public class DutyTable extends DBHelper.ITableBase {
                 int start = cursor.getInt(2);
                 int duration = cursor.getInt(3);
                 int alarmBefore = cursor.getInt(4);
+
                 try {
                     Duty duty = new Duty(id, name, start, duration, alarmBefore);
                     duties.add(duty);
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
 
                 cursor.moveToNext();
@@ -65,6 +66,7 @@ public class DutyTable extends DBHelper.ITableBase {
         values.put("start", startSecondsInDay);
         values.put("duration", durationSeconds);
         values.put("alarmBefore", alarmBeforeSeconds);
+
         int id = this.mDb.insert(this, values);
         return new Duty(id, name, startSecondsInDay, durationSeconds,
                 alarmBeforeSeconds);
