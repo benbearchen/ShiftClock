@@ -83,6 +83,30 @@ public class ShiftClockActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+        Button regularDuty = (Button) findViewById(R.id.button_regularDuty);
+        regularDuty.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 固定值班设置
+            }
+        });
+
+        Button adjustHoliday = (Button) findViewById(R.id.button_adjustHoliday);
+        adjustHoliday.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 节假日值班调整
+            }
+        });
+
+        Button setConfig = (Button) findViewById(R.id.button_config);
+        setConfig.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 全局设置
+            }
+        });
     }
 
     @Override

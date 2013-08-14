@@ -27,6 +27,24 @@
             android:text="@string/label_disableAlarm" />
 
         <Button
+            android:id="@+id/button_config"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_setConfig" />
+
+        <Button
+            android:id="@+id/button_about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_about" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
             android:id="@+id/button_setDuty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,10 +57,16 @@
             android:text="@string/label_adjustDuty" />
 
         <Button
-            android:id="@+id/button_about"
+            android:id="@+id/button_regularDuty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_about" />
+            android:text="@string/label_regularDuty" />
+
+        <Button
+            android:id="@+id/button_adjustHoliday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_adjustHoliday" />
     </LinearLayout>
 
 </LinearLayout>

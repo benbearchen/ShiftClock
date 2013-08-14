@@ -21,5 +21,8 @@
     <string name="hint_dutyName">请输入班种名字</string>
     <string name="label_dutyAlarmBefore">提前闹铃</string>
     <string name="label_dutyDefaultAlarm">使用默认的提前闹铃设置</string>
+    <string name="label_adjustHoliday">节日调整</string>
+    <string name="label_regularDuty">固定值班</string>
+    <string name="label_setConfig">设置</string>
 
 </resources>
