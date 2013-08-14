@@ -1,8 +1,6 @@
 package org.bxmy.shiftclock;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import org.bxmy.shiftclock.shiftduty.Duty;
@@ -91,8 +89,8 @@ public class DutyListActivity extends Activity {
     }
 
     private String formatSecondsInDay(int seconds) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        return sdf.format(new Date(seconds * 1000L));
+        return String.format("%02d:%02d", seconds / 3600 % 24,
+                seconds / 60 % 60);
     }
 
     private void openDutyEditor(int position) {
