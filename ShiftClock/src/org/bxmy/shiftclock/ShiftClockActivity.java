@@ -32,7 +32,10 @@ public class ShiftClockActivity extends Activity {
 
         ShiftDuty.getInstance().init(this);
 
-        setAlarmTime(this, System.currentTimeMillis() + 20 * 1000, 10 * 1000);
+        long nextAlarmTime = ShiftDuty.getInstance().getNextAlarmTimeMS();
+        if (nextAlarmTime > 0) {
+            setAlarmTime(this, nextAlarmTime, 10 * 1000);
+        }
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_SHUTDOWN);

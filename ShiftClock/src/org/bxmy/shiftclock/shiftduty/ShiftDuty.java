@@ -84,6 +84,14 @@ public class ShiftDuty {
         return mDuties.get(index);
     }
 
+    /**
+     * 获取下一次闹钟的时间
+     */
+    public long getNextAlarmTimeMS() {
+        // TODO: implements real alarm time
+        return 0;
+    }
+
     private void initDb(Context context) {
         mDb = new DBHelper(context, "shiftduty", 1);
 
