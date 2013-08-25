@@ -50,6 +50,17 @@ public class ShiftClockActivity extends Activity {
             }
         });
 
+        Button changeJob = (Button) findViewById(R.id.button_changeJob);
+        changeJob.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(ShiftClockActivity.this, JobActivity.class);
+
+                startActivity(intent);
+            }
+        });
+
         Button setDuty = (Button) findViewById(R.id.button_setDuty);
         setDuty.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -104,7 +115,10 @@ public class ShiftClockActivity extends Activity {
         setConfig.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: 全局设置
+                Intent intent = new Intent();
+                intent.setClass(ShiftClockActivity.this, ConfigActivity.class);
+
+                startActivity(intent);
             }
         });
     }

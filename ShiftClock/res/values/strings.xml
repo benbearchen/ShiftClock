@@ -24,5 +24,10 @@
     <string name="label_adjustHoliday">节日调整</string>
     <string name="label_regularDuty">固定值班</string>
     <string name="label_setConfig">设置</string>
+    <string name="label_setJob">切换工作岗位</string>
+    <string name="label_defaultAlarmBefore">默认提前闹铃时间</string>
+    <string name="label_config">闹铃设置</string>
+    <string name="label_job">工作岗位</string>
+    <string name="label_defaultAlarmInterval">默认闹铃间隔</string>
 
 </resources>

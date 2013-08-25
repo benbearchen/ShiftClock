@@ -72,9 +72,9 @@ public class DutyListActivity extends Activity {
             map = new HashMap<String, Object>();
             map.put("1", duty.getName());
             int start = duty.getStartSecondsInDay();
-            map.put("2", formatSecondsInDay(start));
+            map.put("2", Util.formatSecondsInDay(start));
             int end = duty.getStartSecondsInDay() + duty.getDurationSeconds();
-            map.put("3", formatSecondsInDay(end));
+            map.put("3", Util.formatSecondsInDay(end));
             items.add(map);
         }
 
@@ -86,11 +86,6 @@ public class DutyListActivity extends Activity {
         }
 
         return items;
-    }
-
-    private String formatSecondsInDay(int seconds) {
-        return String.format("%02d:%02d", seconds / 3600 % 24,
-                seconds / 60 % 60);
     }
 
     private void openDutyEditor(int position) {

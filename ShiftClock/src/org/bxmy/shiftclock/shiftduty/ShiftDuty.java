@@ -92,6 +92,28 @@ public class ShiftDuty {
         return 0;
     }
 
+    /**
+     * 获取默认提前闹铃时间。初始为半小时
+     */
+    public int getDefaultAlarmBeforeSeconds() {
+        return 1800;
+    }
+
+    public void setDefaultAlarmBeforeSeconds(int alarmBeforeSeconds) {
+        // TODO:
+    }
+
+    /**
+     * 获取默认的闹铃间隔。默认为十分钟
+     */
+    public int getDefaultAlarmIntervalSeconds() {
+        return 600;
+    }
+
+    public void setDefaultAlarmIntervalSeconds(int alarmIntervalSeconds) {
+        // TODO:
+    }
+
     private void initDb(Context context) {
         mDb = new DBHelper(context, "shiftduty", 1);
 

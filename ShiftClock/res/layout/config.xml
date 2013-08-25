@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button
+        android:id="@+id/button_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/label_ok" />
+
+    <Button
+        android:id="@+id/button_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_ok"
+        android:layout_alignBottom="@+id/button_ok"
+        android:layout_toRightOf="@+id/button_ok"
+        android:text="@string/label_cancel" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_ok"
+        android:layout_below="@+id/button_ok"
+        android:layout_marginTop="17dp"
+        android:text="@string/label_defaultAlarmBefore" />
+
+    <TimePicker
+        android:id="@+id/time_defaultAlarmBefore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_toRightOf="@+id/textView1" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_centerVertical="true"
+        android:text="@string/label_defaultAlarmInterval" />
+
+    <TimePicker
+        android:id="@+id/time_defaultAlarmInterval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_toRightOf="@+id/textView2" />
+
+</RelativeLayout>

@@ -27,6 +27,12 @@
             android:text="@string/label_disableAlarm" />
 
         <Button
+            android:id="@+id/button_changeJob"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_setJob" />
+
+        <Button
             android:id="@+id/button_config"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

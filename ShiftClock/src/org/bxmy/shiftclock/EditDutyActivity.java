@@ -92,36 +92,27 @@ public class EditDutyActivity extends Activity {
         Duty duty = ShiftDuty.getInstance().getDutyInIndex(mIndex);
 
         if (duty == null) {
-            updateTime(mStartTime, 9 * 3600);
-            updateTime(mEndTime, 18 * 3600);
+            Util.updateTime(mStartTime, 9 * 3600);
+            Util.updateTime(mEndTime, 18 * 3600);
 
             mDefaultAlarm.setChecked(true);
-            updateTime(mAlarmBefore, 1800);
+            Util.updateTime(mAlarmBefore, 1800);
         } else {
             mDutyId = duty.getId();
             mDutyName.setText(duty.getName());
 
-            updateTime(mStartTime, duty.getStartSecondsInDay());
-            updateTime(mEndTime,
+            Util.updateTime(mStartTime, duty.getStartSecondsInDay());
+            Util.updateTime(mEndTime,
                     duty.getStartSecondsInDay() + duty.getDurationSeconds());
 
             if (duty.getAlarmBeforeSeconds() >= 0) {
                 mDefaultAlarm.setChecked(false);
-                updateTime(mAlarmBefore, duty.getAlarmBeforeSeconds());
+                Util.updateTime(mAlarmBefore, duty.getAlarmBeforeSeconds());
             } else {
                 mDefaultAlarm.setChecked(true);
-                updateTime(mAlarmBefore, 1800);
+                Util.updateTime(mAlarmBefore, 1800);
             }
         }
-    }
-
-    private void updateTime(TimePicker picker, int seconds) {
-        picker.setCurrentHour(seconds / 3600 % 24);
-        picker.setCurrentMinute(seconds / 60 % 60);
-    }
-
-    private int getTime(TimePicker picker) {
-        return picker.getCurrentHour() * 3600 + picker.getCurrentMinute() * 60;
     }
 
     private void onOK() {
@@ -133,8 +124,8 @@ public class EditDutyActivity extends Activity {
 
         String dutyName = mDutyName.getText().toString();
 
-        int start = getTime(mStartTime);
-        int end = getTime(mEndTime);
+        int start = Util.getTime(mStartTime);
+        int end = Util.getTime(mEndTime);
         if (end <= start)
             end += 86400; // 加一天
 
@@ -142,7 +133,7 @@ public class EditDutyActivity extends Activity {
 
         int alarmBefore = -1;
         if (!mDefaultAlarm.isChecked()) {
-            alarmBefore = getTime(mAlarmBefore);
+            alarmBefore = Util.getTime(mAlarmBefore);
         }
 
         if (mDutyId < 0) {
