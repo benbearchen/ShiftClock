@@ -17,11 +17,23 @@ public class WatchTable extends DBHelper.ITableBase {
     }
 
     @Override
+    public void onUpgrade(int oldVersion, int newVersion) {
+        final int CURRENT_VERSION = 1;
+        if (oldVersion <= CURRENT_VERSION) {
+            ArrayList<Watch> watches = upgradeFrom(oldVersion);
+            mDb.recreateTable(this);
+
+            if (watches != null)
+                rebuildTable(watches);
+        }
+    }
+
+    @Override
     public String getCreateSQL() {
-        return "create table " + this.mTableName
+        return "create table " + getTableName()
                 + " (_id integer primary key autoincrement, "
                 + " dutyid integer not null, " + " day bigint not null, "
-                + " before integer not null, " + " after integer not null) ";
+                + " before integer not null, " + " after integer not null)";
     }
 
     @Override
@@ -78,5 +90,31 @@ public class WatchTable extends DBHelper.ITableBase {
         String where = "_id=?";
         String[] whereArgs = new String[] { String.valueOf(watch.getId()) };
         this.mDb.update(this, values, where, whereArgs);
+    }
+
+    private void rebuildTable(ArrayList<Watch> watches) {
+        ArrayList<ContentValues> watchValues = new ArrayList<ContentValues>();
+        for (int i = 0; i < watches.size(); ++i) {
+            Watch watch = watches.get(i);
+
+            ContentValues values = new ContentValues();
+            values.put("_id", watch.getId());
+            values.put("dutyid", watch.getDutyId());
+            values.put("day", watch.getDayInSeconds());
+            values.put("before", watch.getBeforeSeconds());
+            values.put("after", watch.getAfterSeconds());
+
+            watchValues.add(values);
+        }
+
+        mDb.rebuildTable(this, watchValues);
+    }
+
+    private ArrayList<Watch> upgradeFrom(int oldVersion) {
+        if (oldVersion >= 0x70000000) {
+            return null;
+        } else {
+            return null;
+        }
     }
 }

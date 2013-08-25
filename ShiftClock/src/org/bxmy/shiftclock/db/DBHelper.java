@@ -7,6 +7,8 @@
 
 package org.bxmy.shiftclock.db;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,22 +21,39 @@ public class DBHelper extends SQLiteOpenHelper {
 
     protected String mDbName;
 
-    private boolean isNewDB;
+    private static final int DATABASE_VERSION = 2;
 
-    public DBHelper(Context context, String dbName, int dbVersion) {
-        super(context, dbName, null, dbVersion);
+    private static ArrayList<ITableBase> sTables = new ArrayList<ITableBase>();
+
+    public static DBHelper createInstance(Context context, String dbName) {
+        return new DBHelper(context, dbName);
+    }
+
+    private DBHelper(Context context, String dbName) {
+        super(context, dbName, null, DATABASE_VERSION);
+
         this.mDbName = dbName;
         this.mDb = getWritableDatabase();
+
+        for (int i = 0; i < sTables.size(); ++i) {
+            ITableBase table = sTables.get(i);
+            table.bind(this);
+        }
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        isNewDB = true;
+        for (int i = 0; i < sTables.size(); ++i) {
+            ITableBase table = sTables.get(i);
+            db.execSQL(table.getCreateSQL());
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // 数据库升级
+        for (int i = 0; i < sTables.size(); ++i) {
+            sTables.get(i).onUpgrade(oldVersion, newVersion);
+        }
     }
 
     public static abstract class ITableBase {
@@ -44,6 +63,8 @@ public class DBHelper extends SQLiteOpenHelper {
             this.mDb = db;
         }
 
+        public abstract void onUpgrade(int oldVersion, int newVersion);
+
         public abstract String getTableName();
 
         public abstract String getCreateSQL();
@@ -51,10 +72,8 @@ public class DBHelper extends SQLiteOpenHelper {
         public abstract String[] getAllFields();
     }
 
-    public void addTable(ITableBase table) {
-        table.bind(this);
-        if (isNewDB)
-            this.mDb.execSQL(table.getCreateSQL());
+    public static void addTable(ITableBase table) {
+        sTables.add(table);
     }
 
     public Cursor cursorListAll(ITableBase table) {
@@ -77,5 +96,21 @@ public class DBHelper extends SQLiteOpenHelper {
     public void update(ITableBase table, ContentValues values, String where,
             String[] whereArgs) {
         this.mDb.update(table.getTableName(), values, where, whereArgs);
+    }
+
+    public void recreateTable(ITableBase table) {
+        this.mDb.execSQL("drop table if exists " + table.getTableName());
+        this.mDb.execSQL(table.getCreateSQL());
+    }
+
+    public void rebuildTable(ITableBase table, ArrayList<ContentValues> values) {
+        this.mDb.beginTransaction();
+
+        for (int i = 0; i < values.size(); ++i) {
+            insert(table, values.get(i));
+        }
+
+        this.mDb.setTransactionSuccessful();
+        this.mDb.endTransaction();
     }
 }

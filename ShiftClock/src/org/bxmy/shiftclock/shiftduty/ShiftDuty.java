@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bxmy.shiftclock.db.DBHelper;
 import org.bxmy.shiftclock.db.DutyTable;
+import org.bxmy.shiftclock.db.WatchTable;
 
 import android.content.Context;
 import android.util.Log;
@@ -17,6 +18,8 @@ public class ShiftDuty {
     private DBHelper mDb;
 
     private DutyTable mDutyTable;
+
+    private WatchTable mWatchTable;
 
     public static synchronized ShiftDuty getInstance() {
         if (sShiftDuty == null) {
@@ -115,10 +118,13 @@ public class ShiftDuty {
     }
 
     private void initDb(Context context) {
-        mDb = new DBHelper(context, "shiftduty", 1);
-
         mDutyTable = new DutyTable();
-        mDb.addTable(mDutyTable);
+        DBHelper.addTable(mDutyTable);
+
+        mWatchTable = new WatchTable();
+        DBHelper.addTable(mWatchTable);
+
+        mDb = DBHelper.createInstance(context, "shiftduty");
     }
 
     private void loadDuties() {
