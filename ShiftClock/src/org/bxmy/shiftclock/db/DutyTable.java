@@ -17,13 +17,19 @@ public class DutyTable extends DBHelper.ITableBase {
     @Override
     public void onUpgrade(int oldVersion, int newVersion) {
         final int CURRENT_VERSION = 1;
-        if (oldVersion <= CURRENT_VERSION) {
-            ArrayList<Duty> duties = upgradeFrom(oldVersion);
-            mDb.recreateTable(this);
-
-            if (duties != null)
-                rebuildTable(duties);
+        ArrayList<Duty> duties = null;
+        try {
+            if (oldVersion < CURRENT_VERSION)
+                duties = upgradeFrom(oldVersion);
+            else
+                duties = upgradeFrom(CURRENT_VERSION);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        mDb.recreateTable(this);
+        if (duties != null)
+            rebuildTable(duties);
     }
 
     @Override
@@ -115,6 +121,7 @@ public class DutyTable extends DBHelper.ITableBase {
     }
 
     private ArrayList<Duty> upgradeFrom(int oldVersion) {
+        // list from newly version to oldest version
         if (oldVersion >= 0x70000000) {
             return null;
         } else if (oldVersion >= 1) {
@@ -147,8 +154,8 @@ public class DutyTable extends DBHelper.ITableBase {
 
                 public ArrayList<Duty> selectAll() {
                     ArrayList<Duty> duties = new ArrayList<Duty>();
-                    if (mDb != null) {
-                        Cursor cursor = mDb.cursorListAll(this);
+                    if (DutyTable.this.mDb != null) {
+                        Cursor cursor = DutyTable.this.mDb.cursorListAll(this);
                         cursor.moveToFirst();
 
                         while (!cursor.isAfterLast()) {
@@ -172,6 +179,7 @@ public class DutyTable extends DBHelper.ITableBase {
 
                     return duties;
                 }
+
             }.selectAll();
         } else {
             return null;

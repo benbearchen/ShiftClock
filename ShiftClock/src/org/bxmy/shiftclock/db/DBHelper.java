@@ -33,16 +33,18 @@ public class DBHelper extends SQLiteOpenHelper {
         super(context, dbName, null, DATABASE_VERSION);
 
         this.mDbName = dbName;
-        this.mDb = getWritableDatabase();
-
         for (int i = 0; i < sTables.size(); ++i) {
             ITableBase table = sTables.get(i);
             table.bind(this);
         }
+
+        this.mDb = getWritableDatabase();
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        this.mDb = db;
+
         for (int i = 0; i < sTables.size(); ++i) {
             ITableBase table = sTables.get(i);
             db.execSQL(table.getCreateSQL());
@@ -51,6 +53,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        this.mDb = db;
+
         for (int i = 0; i < sTables.size(); ++i) {
             sTables.get(i).onUpgrade(oldVersion, newVersion);
         }

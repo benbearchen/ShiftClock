@@ -18,14 +18,20 @@ public class WatchTable extends DBHelper.ITableBase {
 
     @Override
     public void onUpgrade(int oldVersion, int newVersion) {
-        final int CURRENT_VERSION = 1;
-        if (oldVersion <= CURRENT_VERSION) {
-            ArrayList<Watch> watches = upgradeFrom(oldVersion);
-            mDb.recreateTable(this);
-
-            if (watches != null)
-                rebuildTable(watches);
+        final int CURRENT_VERSION = 2;
+        ArrayList<Watch> watches = null;
+        try {
+            if (oldVersion < CURRENT_VERSION)
+                watches = upgradeFrom(oldVersion);
+            else
+                watches = upgradeFrom(CURRENT_VERSION);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        mDb.recreateTable(this);
+        if (watches != null)
+            rebuildTable(watches);
     }
 
     @Override
@@ -113,6 +119,63 @@ public class WatchTable extends DBHelper.ITableBase {
     private ArrayList<Watch> upgradeFrom(int oldVersion) {
         if (oldVersion >= 0x70000000) {
             return null;
+        } else if (oldVersion >= 2) {
+            return new DBHelper.ITableBase() {
+
+                @Override
+                public void onUpgrade(int oldVersion, int newVersion) {
+                }
+
+                @Override
+                public String getTableName() {
+                    return WatchTable.this.getTableName();
+                }
+
+                @Override
+                public String getCreateSQL() {
+                    return "create table " + getTableName()
+                            + " (_id integer primary key autoincrement, "
+                            + " dutyid integer not null, "
+                            + " day bigint not null, "
+                            + " before integer not null, "
+                            + " after integer not null)";
+                }
+
+                @Override
+                public String[] getAllFields() {
+                    return new String[] { "_id", "dutyid", "day", "before",
+                            "after" };
+                }
+
+                public ArrayList<Watch> selectAll() {
+                    ArrayList<Watch> watches = new ArrayList<Watch>();
+                    if (WatchTable.this.mDb != null) {
+                        Cursor cursor = WatchTable.this.mDb.cursorListAll(this);
+                        cursor.moveToFirst();
+
+                        while (!cursor.isAfterLast()) {
+                            int id = cursor.getInt(0);
+                            int dutyId = cursor.getInt(1);
+                            long day = cursor.getLong(2);
+                            int before = cursor.getInt(3);
+                            int after = cursor.getInt(4);
+
+                            try {
+                                Watch watch = new Watch(id, dutyId, day,
+                                        before, after);
+                                watches.add(watch);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            cursor.moveToNext();
+                        }
+                    }
+
+                    return watches;
+                }
+
+            }.selectAll();
         } else {
             return null;
         }
