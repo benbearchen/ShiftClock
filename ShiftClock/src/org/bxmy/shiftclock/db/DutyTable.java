@@ -37,7 +37,8 @@ public class DutyTable extends DBHelper.ITableBase {
         return "create table " + getTableName()
                 + " (_id integer primary key autoincrement, "
                 + " name text not null, " + " start integer not null, "
-                + " duration integer not null, " + " alarmBefore integer)";
+                + " duration integer not null, "
+                + " alarmBefore integer not null)";
     }
 
     @Override
@@ -125,62 +126,29 @@ public class DutyTable extends DBHelper.ITableBase {
         if (oldVersion >= 0x70000000) {
             return null;
         } else if (oldVersion >= 1) {
-            return new DBHelper.ITableBase() {
+            String[] fields = new String[] { "_id",// integer primary key
+                    "name", // text
+                    "start", // integer
+                    "duration", // integer
+                    "alarmBefore", // integer
+            };
+
+            DBHelper.IDbObjectCreator<Duty> creator = new DBHelper.IDbObjectCreator<Duty>() {
 
                 @Override
-                public void onUpgrade(int oldVersion, int newVersion) {
+                public Duty create(Cursor cursor) {
+                    int id = cursor.getInt(0);
+                    String name = cursor.getString(1);
+                    int start = cursor.getInt(2);
+                    int duration = cursor.getInt(3);
+                    int alarmBefore = cursor.getInt(4);
+
+                    return new Duty(id, name, start, duration, alarmBefore);
                 }
+            };
 
-                @Override
-                public String getTableName() {
-                    return DutyTable.this.getTableName();
-                }
-
-                @Override
-                public String getCreateSQL() {
-                    return "create table " + getTableName()
-                            + " (_id integer primary key autoincrement, "
-                            + " name text not null, "
-                            + " start integer not null, "
-                            + " duration integer not null, "
-                            + " alarmBefore integer)";
-                }
-
-                @Override
-                public String[] getAllFields() {
-                    return new String[] { "_id", "name", "start", "duration",
-                            "alarmBefore" };
-                }
-
-                public ArrayList<Duty> selectAll() {
-                    ArrayList<Duty> duties = new ArrayList<Duty>();
-                    if (DutyTable.this.mDb != null) {
-                        Cursor cursor = DutyTable.this.mDb.cursorListAll(this);
-                        cursor.moveToFirst();
-
-                        while (!cursor.isAfterLast()) {
-                            int id = cursor.getInt(0);
-                            String name = cursor.getString(1);
-                            int start = cursor.getInt(2);
-                            int duration = cursor.getInt(3);
-                            int alarmBefore = cursor.getInt(4);
-
-                            try {
-                                Duty duty = new Duty(id, name, start, duration,
-                                        alarmBefore);
-                                duties.add(duty);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            cursor.moveToNext();
-                        }
-                    }
-
-                    return duties;
-                }
-
-            }.selectAll();
+            return mDb.new UpgradeHelper<Duty>(getTableName(), fields, creator)
+                    .selectAll();
         } else {
             return null;
         }

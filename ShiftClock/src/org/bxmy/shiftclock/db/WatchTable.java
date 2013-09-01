@@ -117,65 +117,33 @@ public class WatchTable extends DBHelper.ITableBase {
     }
 
     private ArrayList<Watch> upgradeFrom(int oldVersion) {
+        // list from newly version to oldest version
         if (oldVersion >= 0x70000000) {
             return null;
         } else if (oldVersion >= 2) {
-            return new DBHelper.ITableBase() {
+            String[] fields = new String[] { "_id", // integer primary key
+                    "dutyid", // integer
+                    "day", // bigint
+                    "before", // integer
+                    "after", // integer
+            };
+
+            DBHelper.IDbObjectCreator<Watch> creator = new DBHelper.IDbObjectCreator<Watch>() {
 
                 @Override
-                public void onUpgrade(int oldVersion, int newVersion) {
+                public Watch create(Cursor cursor) {
+                    int id = cursor.getInt(0);
+                    int dutyId = cursor.getInt(1);
+                    long day = cursor.getLong(2);
+                    int before = cursor.getInt(3);
+                    int after = cursor.getInt(4);
+
+                    return new Watch(id, dutyId, day, before, after);
                 }
+            };
 
-                @Override
-                public String getTableName() {
-                    return WatchTable.this.getTableName();
-                }
-
-                @Override
-                public String getCreateSQL() {
-                    return "create table " + getTableName()
-                            + " (_id integer primary key autoincrement, "
-                            + " dutyid integer not null, "
-                            + " day bigint not null, "
-                            + " before integer not null, "
-                            + " after integer not null)";
-                }
-
-                @Override
-                public String[] getAllFields() {
-                    return new String[] { "_id", "dutyid", "day", "before",
-                            "after" };
-                }
-
-                public ArrayList<Watch> selectAll() {
-                    ArrayList<Watch> watches = new ArrayList<Watch>();
-                    if (WatchTable.this.mDb != null) {
-                        Cursor cursor = WatchTable.this.mDb.cursorListAll(this);
-                        cursor.moveToFirst();
-
-                        while (!cursor.isAfterLast()) {
-                            int id = cursor.getInt(0);
-                            int dutyId = cursor.getInt(1);
-                            long day = cursor.getLong(2);
-                            int before = cursor.getInt(3);
-                            int after = cursor.getInt(4);
-
-                            try {
-                                Watch watch = new Watch(id, dutyId, day,
-                                        before, after);
-                                watches.add(watch);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            cursor.moveToNext();
-                        }
-                    }
-
-                    return watches;
-                }
-
-            }.selectAll();
+            return mDb.new UpgradeHelper<Watch>(getTableName(), fields, creator)
+                    .selectAll();
         } else {
             return null;
         }

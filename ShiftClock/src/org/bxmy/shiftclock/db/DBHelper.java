@@ -76,6 +76,52 @@ public class DBHelper extends SQLiteOpenHelper {
         public abstract String[] getAllFields();
     }
 
+    public static interface IDbObjectCreator<T> {
+        public T create(Cursor cursor);
+    }
+
+    public class UpgradeHelper<T> {
+
+        private String mTableName;
+
+        private String[] mFields;
+
+        private IDbObjectCreator<T> mCreator;
+
+        public UpgradeHelper(String tableName, String[] fields,
+                IDbObjectCreator<T> creator) {
+            this.mTableName = tableName;
+            this.mFields = fields;
+            this.mCreator = creator;
+        }
+
+        public ArrayList<T> selectAll() {
+            ArrayList<T> objects = new ArrayList<T>();
+            if (mDb != null) {
+                Cursor cursor = mDb.query(mTableName, // Table Name
+                        mFields, // Columns to return
+                        null, // SQL WHERE
+                        null, // Selection Args
+                        null, // SQL GROUP BY
+                        null, // SQL HAVING
+                        mFields[0]); // SQL ORDER BY
+                cursor.moveToFirst();
+
+                while (!cursor.isAfterLast()) {
+                    try {
+                        objects.add(this.mCreator.create(cursor));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    cursor.moveToNext();
+                }
+            }
+
+            return objects;
+        }
+    }
+
     public static void addTable(ITableBase table) {
         sTables.add(table);
     }
