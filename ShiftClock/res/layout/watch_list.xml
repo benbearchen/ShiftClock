@@ -18,16 +18,16 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button_addDuty"
+                android:id="@+id/button_addWatch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_addDuty" />
+                android:text="@string/label_addWatch" />
 
             <Button
-                android:id="@+id/button_cutDuty"
+                android:id="@+id/button_cutWatch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_cutDuty" />
+                android:text="@string/label_cutWatch" />
         </LinearLayout>
     </LinearLayout>
 

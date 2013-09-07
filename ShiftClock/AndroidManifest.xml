@@ -44,7 +44,7 @@
         <activity android:name="AboutActivity" android:label="@string/label_about"></activity>
         <activity android:name="JobActivity" android:label="@string/label_job"></activity>
         <activity android:name="ConfigActivity" android:label="@string/label_config"></activity>
-        <activity android:name="AdjustDutyActivity" android:label="@string/label_adjustDuty"></activity>
+        <activity android:name="WatchActivity" android:label="@string/label_setWatch"></activity>
         <activity android:name="EditDutyActivity" android:label="@string/label_titleEditDuty"></activity>
     </application>
 

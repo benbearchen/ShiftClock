@@ -57,10 +57,10 @@
             android:text="@string/label_setDuty" />
 
         <Button
-            android:id="@+id/button_adjustDuty"
+            android:id="@+id/button_setWatch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_adjustDuty" />
+            android:text="@string/label_setWatch" />
 
         <Button
             android:id="@+id/button_regularDuty"
