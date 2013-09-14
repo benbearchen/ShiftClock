@@ -2,9 +2,11 @@ package org.bxmy.shiftclock.shiftduty;
 
 import java.util.Date;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class Watch {
+public class Watch implements Parcelable {
 
     private int mId;
 
@@ -92,6 +94,40 @@ public class Watch {
             afterSeconds = 0;
 
         this.mAfterSeconds = afterSeconds;
+    }
+
+    public static final Parcelable.Creator<Watch> CREATOR = new Creator<Watch>() {
+
+        @Override
+        public Watch createFromParcel(Parcel source) {
+            int id = source.readInt();
+            int dutyId = source.readInt();
+            long dayInSeconds = source.readLong();
+            int beforeSeconds = source.readInt();
+            int afterSeconds = source.readInt();
+
+            return new Watch(id, dutyId, dayInSeconds, beforeSeconds,
+                    afterSeconds);
+        }
+
+        @Override
+        public Watch[] newArray(int size) {
+            return new Watch[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
+        dest.writeInt(mDutyId);
+        dest.writeLong(mDayInSeconds);
+        dest.writeInt(mBeforeSeconds);
+        dest.writeInt(mAfterSeconds);
     }
 
 }

@@ -35,5 +35,9 @@
     <string name="label_watchEnd">值班结束时间</string>
     <string name="label_titleEditWatch">编辑值班</string>
     <string name="label_watchBeginToEnd">至</string>
+    <string name="label_labelWatchDate">日期</string>
+    <string name="label_labelWatchDuty">班种</string>
+    <string name="label_labelWatchBefore">上班调整</string>
+    <string name="label_labelWatchAfter">下班调整</string>
 
 </resources>

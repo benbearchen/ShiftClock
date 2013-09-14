@@ -123,8 +123,13 @@ public class WatchActivity extends Activity {
     }
 
     private void openWatchEditor(int position) {
+        Watch watch = null;
+        if (position >= 0 || position < mWatches.length) {
+            watch = mWatches[position];
+        }
+
         Intent intent = new Intent();
-        intent.putExtra("index", position);
+        intent.putExtra("watch", watch);
         intent.setClass(this, EditWatchActivity.class);
 
         startActivity(intent);

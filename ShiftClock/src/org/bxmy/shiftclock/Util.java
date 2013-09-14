@@ -2,6 +2,7 @@ package org.bxmy.shiftclock;
 
 import java.util.Date;
 
+import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 public final class Util {
@@ -13,6 +14,19 @@ public final class Util {
 
     public static int getTime(TimePicker picker) {
         return picker.getCurrentHour() * 3600 + picker.getCurrentMinute() * 60;
+    }
+
+    public static void updateDate(DatePicker picker, long dayInSeconds) {
+        Date date = secondsToDate(dayInSeconds);
+        picker.init(date.getYear() + 1900, date.getMonth(), date.getDate(),
+                null);
+    }
+
+    public static long getDate(DatePicker picker) {
+        int year = picker.getYear();
+        int month = picker.getMonth();
+        int date = picker.getDayOfMonth();
+        return new Date(year - 1900, month, date).getTime() / 1000;
     }
 
     public static int getCurrentYear() {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <TextView
@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/button_ok"
-        android:text="TextView" />
+        android:text="@string/label_labelWatchDate" />
 
     <DatePicker
         android:id="@+id/date_watchDay"
@@ -24,14 +24,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/date_watchDay"
-        android:text="TextView" />
+        android:text="@string/label_labelWatchDuty" />
 
     <Spinner
         android:id="@+id/combo_duty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/date_watchDay"
-        android:layout_alignTop="@+id/textView2" />
+        android:layout_alignTop="@+id/textView2"
+        android:layout_toRightOf="@+id/textView2" />
 
     <TextView
         android:id="@+id/textView3"
@@ -39,14 +39,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/combo_duty"
-        android:text="TextView" />
+        android:text="@string/label_labelWatchBefore" />
 
     <TimePicker
         android:id="@+id/time_beforeWatch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/combo_duty"
-        android:layout_alignTop="@+id/textView3" />
+        android:layout_alignTop="@+id/textView3"
+        android:layout_toRightOf="@+id/textView3" />
 
     <TextView
         android:id="@+id/textView4"
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/time_beforeWatch"
-        android:text="TextView" />
+        android:text="@string/label_labelWatchAfter" />
 
     <TimePicker
         android:id="@+id/time_afterWatch"
@@ -62,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/textView4"
         android:layout_toRightOf="@+id/textView4" />
-
+
     <Button
         android:id="@+id/button_ok"
         android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:text="@string/label_ok" />
-
+
     <Button
         android:id="@+id/button_cancel"
         android:layout_width="wrap_content"

@@ -52,7 +52,7 @@ public class ShiftDuty {
             names.add(duty.getName());
         }
 
-        return (String[]) names.toArray();
+        return (String[]) names.toArray(new String[0]);
     }
 
     public String getDutyName(int dutyId) {
@@ -142,13 +142,6 @@ public class ShiftDuty {
         }
 
         return watches;
-    }
-
-    public Watch getWatchInIndex(int index) {
-        if (index < 0 || index >= mWatches.size())
-            return null;
-
-        return mWatches.get(index);
     }
 
     /**
