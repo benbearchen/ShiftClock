@@ -1,5 +1,7 @@
 package org.bxmy.shiftclock.shiftduty;
 
+import java.util.Date;
+
 import android.util.Log;
 
 public class Watch {
@@ -7,7 +9,7 @@ public class Watch {
     private int mId;
 
     /**
-     * 对应的班种
+     * 对应的班种。-1 表示未设置（内存状态，不写入数据库）；0 表示休息；大于 0 表示按某班种上班
      */
     private int mDutyId;
 
@@ -25,6 +27,13 @@ public class Watch {
      * 是否延后落班。0 表示不延后，正数表示延后的时间
      */
     private int mAfterSeconds;
+
+    public static Watch createEmptyInDays(int days) {
+        Date date = new Date();
+        date = new Date(date.getTime() + days * 86400L * 1000L);
+        date = new Date(date.getYear(), date.getMonth(), date.getDate());
+        return new Watch(-1, -1, date.getTime() / 1000, 0, 0);
+    }
 
     public Watch(int id) {
         this.mId = id;

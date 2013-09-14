@@ -1,5 +1,7 @@
 package org.bxmy.shiftclock;
 
+import java.util.Date;
+
 import android.widget.TimePicker;
 
 public final class Util {
@@ -13,8 +15,71 @@ public final class Util {
         return picker.getCurrentHour() * 3600 + picker.getCurrentMinute() * 60;
     }
 
-    public static String formatSecondsInDay(int seconds) {
+    public static int getCurrentYear() {
+        Date date = new Date();
+        return date.getYear() + 1900;
+    }
+
+    public static String formatTimeIn24Hours(long seconds) {
         return String.format("%02d:%02d", seconds / 3600 % 24,
                 seconds / 60 % 60);
+    }
+
+    public static String formatHourMinute(Date time) {
+        return String.format("%02d:%02d", time.getHours(), time.getMinutes());
+    }
+
+    public static String formatMonthDate(Date date) {
+        return String.format("%2d-%2d", date.getMonth() + 1, date.getDate());
+    }
+
+    public static String formatMonth2Minute(Date time) {
+        return formatMonthDate(time) + " " + formatHourMinute(time);
+    }
+
+    public static String formatYear2Date(Date date) {
+        return String.format("%4d-%2d-%2d", date.getYear() + 1900,
+                date.getMonth() + 1, date.getDate());
+    }
+
+    public static String formatYear2Minute(Date time) {
+        return formatYear2Date(time) + " " + formatHourMinute(time);
+    }
+
+    public static Date secondsToDate(long seconds) {
+        return new Date(seconds * 1000);
+    }
+
+    public static boolean isSameDay(Date first, Date second) {
+        return first.getYear() == second.getYear()
+                && first.getMonth() == second.getMonth()
+                && first.getDate() == second.getDate();
+    }
+
+    public static boolean isSameYear(Date first, Date second) {
+        return first.getYear() == second.getYear();
+    }
+
+    public static String formatDate(long dayInSeconds) {
+        Date now = new Date();
+        Date date = secondsToDate(dayInSeconds);
+        if (now.getYear() == date.getYear()) {
+            return formatMonthDate(date);
+        } else {
+            return formatYear2Date(date);
+        }
+    }
+
+    public static String formatTimeRelatived(long beginSeconds,
+            int relativeSeconds) {
+        Date begin = secondsToDate(beginSeconds);
+        Date relative = secondsToDate(beginSeconds + relativeSeconds);
+        if (isSameDay(begin, relative)) {
+            return formatHourMinute(relative);
+        } else if (isSameYear(begin, relative)) {
+            return formatMonth2Minute(relative);
+        } else {
+            return formatYear2Minute(relative);
+        }
     }
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/label_watchDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/label_watchDate" />
+
+    <TextView
+        android:id="@+id/label_watchDuty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="14dp"
+        android:layout_toRightOf="@+id/label_watchDate"
+        android:text="@string/label_watchDuty" />
+
+    <TextView
+        android:id="@+id/label_watchBegin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/label_watchDate"
+        android:text="@string/label_watchBegin" />
+
+    <TextView
+        android:id="@+id/label_watchBeginToEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_watchBegin"
+        android:layout_alignBottom="@+id/label_watchBegin"
+        android:layout_marginLeft="7dp"
+        android:layout_toRightOf="@+id/label_watchBegin"
+        android:text="@string/label_watchBeginToEnd" />
+
+    <TextView
+        android:id="@+id/label_watchEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_watchBeginToEnd"
+        android:layout_alignBottom="@+id/label_watchBeginToEnd"
+        android:layout_marginLeft="7dp"
+        android:layout_toRightOf="@+id/label_watchBeginToEnd"
+        android:text="@string/label_watchEnd" />
+
+</RelativeLayout>

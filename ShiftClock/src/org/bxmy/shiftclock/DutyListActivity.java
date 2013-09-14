@@ -72,9 +72,9 @@ public class DutyListActivity extends Activity {
             map = new HashMap<String, Object>();
             map.put("1", duty.getName());
             int start = duty.getStartSecondsInDay();
-            map.put("2", Util.formatSecondsInDay(start));
+            map.put("2", Util.formatTimeIn24Hours(start));
             int end = duty.getStartSecondsInDay() + duty.getDurationSeconds();
-            map.put("3", Util.formatSecondsInDay(end));
+            map.put("3", Util.formatTimeIn24Hours(end));
             items.add(map);
         }
 

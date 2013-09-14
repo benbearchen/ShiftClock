@@ -15,6 +15,8 @@ public class ShiftDuty {
 
     private ArrayList<Duty> mDuties = new ArrayList<Duty>();
 
+    private ArrayList<Watch> mWatches = new ArrayList<Watch>();
+
     private DBHelper mDb;
 
     private DutyTable mDutyTable;
@@ -35,6 +37,7 @@ public class ShiftDuty {
     public void init(Context context) {
         initDb(context);
         loadDuties();
+        loadWatches();
     }
 
     public void close() {
@@ -50,6 +53,15 @@ public class ShiftDuty {
         }
 
         return (String[]) names.toArray();
+    }
+
+    public String getDutyName(int dutyId) {
+        Duty duty = getDutyById(dutyId);
+        if (duty != null) {
+            return duty.getName();
+        } else {
+            return "";
+        }
     }
 
     public Duty newDuty(String name, int startSecondsInDay,
@@ -85,6 +97,58 @@ public class ShiftDuty {
             return null;
 
         return mDuties.get(index);
+    }
+
+    public Duty getDutyById(int dutyId) {
+        for (int i = 0; i < mDuties.size(); ++i) {
+            if (mDuties.get(i).getId() == dutyId)
+                return mDuties.get(i);
+        }
+
+        return null;
+    }
+
+    public Watch newWatch(int dutyId, long dayInSeconds, int beforeSeconds,
+            int afterSeconds) {
+        if (mDb != null && mWatchTable != null) {
+            Watch watch = mWatchTable.insert(dutyId, dayInSeconds,
+                    beforeSeconds, afterSeconds);
+            mWatches.add(watch);
+            return watch;
+        }
+
+        Log.e("DB", "newWatch(): db not valid");
+        return null;
+    }
+
+    public void updateWatch(Watch watch) {
+        for (int i = 0; i < mWatches.size(); ++i) {
+            if (mWatches.get(i).getId() == watch.getId()) {
+                mWatches.set(i, watch);
+                if (this.mDb != null && this.mWatchTable != null) {
+                    this.mWatchTable.update(watch);
+                }
+            }
+        }
+    }
+
+    public Watch[] getWatches() {
+        Watch[] watches = new Watch[mWatches.size() + 7];
+        watches = mWatches.toArray(watches);
+        if (watches != null && watches.length > mWatches.size()) {
+            for (int i = mWatches.size(); i < watches.length; ++i) {
+                watches[i] = Watch.createEmptyInDays(i - mWatches.size());
+            }
+        }
+
+        return watches;
+    }
+
+    public Watch getWatchInIndex(int index) {
+        if (index < 0 || index >= mWatches.size())
+            return null;
+
+        return mWatches.get(index);
     }
 
     /**
@@ -130,6 +194,12 @@ public class ShiftDuty {
     private void loadDuties() {
         if (mDb != null && mDutyTable != null) {
             mDuties = mDutyTable.selectAll();
+        }
+    }
+
+    private void loadWatches() {
+        if (mDb != null && mWatchTable != null) {
+            mWatches = mWatchTable.selectAll();
         }
     }
 }
