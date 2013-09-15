@@ -133,11 +133,21 @@ public class ShiftDuty {
     }
 
     public Watch[] getWatches() {
+        long lastDay = 0;
+        if (!mWatches.isEmpty()) {
+            for (Watch w : mWatches) {
+                long day = w.getDayInSeconds();
+                if (day > lastDay)
+                    lastDay = day;
+            }
+        }
+
         Watch[] watches = new Watch[mWatches.size() + 7];
         watches = mWatches.toArray(watches);
         if (watches != null && watches.length > mWatches.size()) {
             for (int i = mWatches.size(); i < watches.length; ++i) {
-                watches[i] = Watch.createEmptyInDays(i - mWatches.size());
+                watches[i] = Watch.createEmptyInDays(lastDay,
+                        i - mWatches.size());
             }
         }
 

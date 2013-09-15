@@ -24,8 +24,8 @@
         android:id="@+id/label_watchBegin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/label_watchDate"
+        android:layout_alignLeft="@+id/label_watchDuty"
+        android:layout_below="@+id/label_watchDuty"
         android:text="@string/label_watchBegin" />
 
     <TextView

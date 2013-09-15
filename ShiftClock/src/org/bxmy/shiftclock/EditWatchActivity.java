@@ -82,7 +82,7 @@ public class EditWatchActivity extends Activity {
 
     private void initWatch() {
         if (mWatch == null)
-            mWatch = Watch.createEmptyInDays(0);
+            mWatch = Watch.createEmptyInDays(0, 0);
 
         int dutyId = mWatch.getDutyId();
         if (dutyId < 0)

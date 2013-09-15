@@ -77,7 +77,7 @@ public class WatchActivity extends Activity {
 
             int dutyId = watch.getDutyId();
             if (dutyId < 0) {
-                map.put("2", "请选择休息还是班种");
+                map.put("2", "<请选择休息还是班种>");
             } else if (dutyId == 0) {
                 map.put("2", "休息");
             } else {
@@ -85,8 +85,7 @@ public class WatchActivity extends Activity {
                 if (duty == null)
                     continue;
 
-                map = new HashMap<String, Object>();
-                map.put("2", duty.getName());
+                map.put("2", "值班：" + duty.getName());
                 if (watch.getBeforeSeconds() > 0) {
                     String startTime = Util.formatTimeRelatived(
                             watch.getDayInSeconds(), -watch.getBeforeSeconds());
@@ -96,7 +95,7 @@ public class WatchActivity extends Activity {
                             Util.formatTimeIn24Hours(watch.getDayInSeconds()));
                 }
 
-                map.put("5", "至");
+                map.put("4", "至");
 
                 if (watch.getAfterSeconds() > 0) {
                     String endTime = Util.formatTimeRelatived(
@@ -124,7 +123,7 @@ public class WatchActivity extends Activity {
 
     private void openWatchEditor(int position) {
         Watch watch = null;
-        if (position >= 0 || position < mWatches.length) {
+        if (position >= 0 && position < mWatches.length) {
             watch = mWatches[position];
         }
 

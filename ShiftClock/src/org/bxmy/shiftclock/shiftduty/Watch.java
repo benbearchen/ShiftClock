@@ -2,6 +2,8 @@ package org.bxmy.shiftclock.shiftduty;
 
 import java.util.Date;
 
+import org.bxmy.shiftclock.Util;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -30,11 +32,18 @@ public class Watch implements Parcelable {
      */
     private int mAfterSeconds;
 
-    public static Watch createEmptyInDays(int days) {
-        Date date = new Date();
-        date = new Date(date.getTime() + days * 86400L * 1000L);
+    public static Watch createEmptyInDays(long lastDayInSeconds, int days) {
+        Date date;
+        if (lastDayInSeconds == 0) {
+            date = new Date();
+        } else {
+            days += 1;
+            date = Util.secondsToDate(lastDayInSeconds);
+        }
+
+        date = Util.secondsToDate(Util.dateToSecnds(date) + days * 86400L);
         date = new Date(date.getYear(), date.getMonth(), date.getDate());
-        return new Watch(-1, -1, date.getTime() / 1000, 0, 0);
+        return new Watch(-1, -1, Util.dateToSecnds(date), 0, 0);
     }
 
     public Watch(int id) {

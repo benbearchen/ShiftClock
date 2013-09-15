@@ -64,6 +64,10 @@ public final class Util {
         return new Date(seconds * 1000);
     }
 
+    public static long dateToSecnds(Date time) {
+        return time.getTime() / 1000;
+    }
+
     public static boolean isSameDay(Date first, Date second) {
         return first.getYear() == second.getYear()
                 && first.getMonth() == second.getMonth()
