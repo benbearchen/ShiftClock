@@ -41,9 +41,9 @@ public class Watch implements Parcelable {
             date = Util.secondsToDate(lastDayInSeconds);
         }
 
-        date = Util.secondsToDate(Util.dateToSecnds(date) + days * 86400L);
+        date = Util.secondsToDate(Util.dateToSeconds(date) + days * 86400L);
         date = new Date(date.getYear(), date.getMonth(), date.getDate());
-        return new Watch(-1, -1, Util.dateToSecnds(date), 0, 0);
+        return new Watch(-1, -1, Util.dateToSeconds(date), 0, 0);
     }
 
     public Watch(int id) {

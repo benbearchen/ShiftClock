@@ -2,6 +2,7 @@ package org.bxmy.shiftclock;
 
 import java.util.ArrayList;
 
+import org.bxmy.shiftclock.shiftduty.Duty;
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
 import org.bxmy.shiftclock.shiftduty.Watch;
 
@@ -9,6 +10,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -55,6 +58,25 @@ public class EditWatchActivity extends Activity {
         ArrayAdapter<String> dutyAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, dutyNames);
         mComboDuty.setAdapter(dutyAdapter);
+        mComboDuty.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                    int arg2, long arg3) {
+                if (arg2 == 0) {
+                    mBeforeTime.setEnabled(false);
+                    mAfterTime.setEnabled(false);
+                } else {
+                    mBeforeTime.setEnabled(true);
+                    mAfterTime.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+
+        });
 
         mBeforeTime = (TimePicker) findViewById(R.id.time_beforeWatch);
         mBeforeTime.setIs24HourView(true);
@@ -109,14 +131,31 @@ public class EditWatchActivity extends Activity {
         }
 
         int dutyId = mComboDuty.getSelectedItemPosition();
-        int beforeSeconds = Util.getTime(mBeforeTime);
-        int afterSeconds = Util.getTime(mAfterTime);
+        Duty duty = null;
+        if (dutyId > 0) {
+            duty = ShiftDuty.getInstance().getDutyById(dutyId);
+            if (duty == null) {
+                Toast.makeText(getApplicationContext(), "班种有误！sorry",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                dutyId = duty.getId();
+            }
+        }
+
+        int beforeSeconds = 0;
+        int afterSeconds = 0;
+        if (duty != null) {
+            dayInSeconds += duty.getStartSecondsInDay();
+            beforeSeconds = Util.getTime(mBeforeTime);
+            afterSeconds = Util.getTime(mAfterTime);
+        }
 
         if (mWatch.getId() < 0) {
             ShiftDuty.getInstance().newWatch(dutyId, dayInSeconds,
                     beforeSeconds, afterSeconds);
         } else {
-            Watch newWatch = new Watch(mWatchId, dutyId, dayInSeconds,
+            Watch newWatch = new Watch(mWatch.getId(), dutyId, dayInSeconds,
                     beforeSeconds, afterSeconds);
             ShiftDuty.getInstance().updateWatch(newWatch);
         }

@@ -34,6 +34,12 @@ public final class Util {
         return date.getYear() + 1900;
     }
 
+    public static long getDateOfTimeInSeconds(long timeInSeconds) {
+        Date date = secondsToDate(timeInSeconds);
+        return dateToSeconds(new Date(date.getYear(), date.getMonth(),
+                date.getDate()));
+    }
+
     public static String formatTimeIn24Hours(long seconds) {
         return String.format("%02d:%02d", seconds / 3600 % 24,
                 seconds / 60 % 60);
@@ -64,7 +70,7 @@ public final class Util {
         return new Date(seconds * 1000);
     }
 
-    public static long dateToSecnds(Date time) {
+    public static long dateToSeconds(Date time) {
         return time.getTime() / 1000;
     }
 
