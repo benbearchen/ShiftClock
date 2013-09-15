@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class EditWatchActivity extends Activity {
 
@@ -81,8 +82,10 @@ public class EditWatchActivity extends Activity {
     }
 
     private void initWatch() {
-        if (mWatch == null)
+        if (mWatch == null) {
+            mWatchDay.setEnabled(true);
             mWatch = Watch.createEmptyInDays(0, 0);
+        }
 
         int dutyId = mWatch.getDutyId();
         if (dutyId < 0)
@@ -97,6 +100,14 @@ public class EditWatchActivity extends Activity {
 
     private void onOK() {
         long dayInSeconds = Util.getDate(mWatchDay);
+        if (mWatchDay.isEnabled()) {
+            if (ShiftDuty.getInstance().watchExistsDay(dayInSeconds)) {
+                Toast.makeText(getApplicationContext(),
+                        "您选择的日期已经有值班安排！未来或有支持重复排班…", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         int dutyId = mComboDuty.getSelectedItemPosition();
         int beforeSeconds = Util.getTime(mBeforeTime);
         int afterSeconds = Util.getTime(mAfterTime);

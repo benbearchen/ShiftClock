@@ -1,7 +1,9 @@
 package org.bxmy.shiftclock.shiftduty;
 
 import java.util.ArrayList;
+import java.util.Date;
 
+import org.bxmy.shiftclock.Util;
 import org.bxmy.shiftclock.db.DBHelper;
 import org.bxmy.shiftclock.db.DutyTable;
 import org.bxmy.shiftclock.db.WatchTable;
@@ -152,6 +154,16 @@ public class ShiftDuty {
         }
 
         return watches;
+    }
+
+    public boolean watchExistsDay(long dayInSeconds) {
+        Date day = Util.secondsToDate(dayInSeconds);
+        for (Watch w : mWatches) {
+            if (Util.isSameDay(day, Util.secondsToDate(w.getDayInSeconds())))
+                return true;
+        }
+
+        return false;
     }
 
     /**

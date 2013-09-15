@@ -111,12 +111,9 @@ public class WatchActivity extends Activity {
             items.add(map);
         }
 
-        boolean appendNewItem = true;
-        if (appendNewItem) {
-            map = new HashMap<String, Object>();
-            map.put("1", "<更多日期>");
-            items.add(map);
-        }
+        map = new HashMap<String, Object>();
+        map.put("1", "<直接设置任意一天>");
+        items.add(map);
 
         return items;
     }
