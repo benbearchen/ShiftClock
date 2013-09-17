@@ -40,6 +40,11 @@ public final class Util {
                 date.getDate()));
     }
 
+    public static long getDateInSeconds(Date date) {
+        return dateToSeconds(new Date(date.getYear(), date.getMonth(),
+                date.getDate()));
+    }
+
     public static String formatTimeIn24Hours(long seconds) {
         return String.format("%02d:%02d", seconds / 3600 % 24,
                 seconds / 60 % 60);

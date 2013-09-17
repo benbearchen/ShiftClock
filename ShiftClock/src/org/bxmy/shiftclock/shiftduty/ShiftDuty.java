@@ -140,7 +140,10 @@ public class ShiftDuty {
         ArrayList<Watch> sorted = new ArrayList<Watch>(mWatches);
         Collections.sort(sorted, Watch.createCompareByDate());
         if (!sorted.isEmpty()) {
-            lastDay = sorted.get(sorted.size() - 1).getDayInSeconds();
+            long maxDay = sorted.get(sorted.size() - 1).getDayInSeconds();
+            long today = Util.getDateInSeconds(new Date());
+            if (maxDay >= today)
+                lastDay = maxDay;
         }
 
         Watch[] watches = new Watch[sorted.size() + 7];
