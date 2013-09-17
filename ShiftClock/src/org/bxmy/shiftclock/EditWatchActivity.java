@@ -23,8 +23,6 @@ public class EditWatchActivity extends Activity {
 
     private Watch mWatch;
 
-    private int mWatchId = -1;
-
     private DatePicker mWatchDay;
 
     private Spinner mComboDuty;

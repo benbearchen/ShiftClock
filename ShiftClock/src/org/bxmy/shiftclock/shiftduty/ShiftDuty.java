@@ -1,6 +1,7 @@
 package org.bxmy.shiftclock.shiftduty;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import org.bxmy.shiftclock.Util;
@@ -136,20 +137,18 @@ public class ShiftDuty {
 
     public Watch[] getWatches() {
         long lastDay = 0;
-        if (!mWatches.isEmpty()) {
-            for (Watch w : mWatches) {
-                long day = w.getDayInSeconds();
-                if (day > lastDay)
-                    lastDay = day;
-            }
+        ArrayList<Watch> sorted = new ArrayList<Watch>(mWatches);
+        Collections.sort(sorted, Watch.createCompareByDate());
+        if (!sorted.isEmpty()) {
+            lastDay = sorted.get(sorted.size() - 1).getDayInSeconds();
         }
 
-        Watch[] watches = new Watch[mWatches.size() + 7];
-        watches = mWatches.toArray(watches);
-        if (watches != null && watches.length > mWatches.size()) {
-            for (int i = mWatches.size(); i < watches.length; ++i) {
-                watches[i] = Watch.createEmptyInDays(lastDay,
-                        i - mWatches.size());
+        Watch[] watches = new Watch[sorted.size() + 7];
+        watches = sorted.toArray(watches);
+        if (watches != null && watches.length > sorted.size()) {
+            for (int i = sorted.size(); i < watches.length; ++i) {
+                int days = i - sorted.size();
+                watches[i] = Watch.createEmptyInDays(lastDay, days);
             }
         }
 

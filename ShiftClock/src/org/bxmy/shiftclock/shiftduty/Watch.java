@@ -1,5 +1,6 @@
 package org.bxmy.shiftclock.shiftduty;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import org.bxmy.shiftclock.Util;
@@ -103,6 +104,22 @@ public class Watch implements Parcelable {
             afterSeconds = 0;
 
         this.mAfterSeconds = afterSeconds;
+    }
+
+    public static Comparator<Watch> createCompareByDate() {
+        return new Comparator<Watch>() {
+
+            @Override
+            public int compare(Watch left, Watch right) {
+                if (left.mDayInSeconds < right.mDayInSeconds)
+                    return -1;
+                else if (left.mDayInSeconds > right.mDayInSeconds)
+                    return 1;
+                else
+                    return 0;
+            }
+
+        };
     }
 
     public static final Parcelable.Creator<Watch> CREATOR = new Creator<Watch>() {
