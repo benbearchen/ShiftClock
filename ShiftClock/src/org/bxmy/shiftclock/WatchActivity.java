@@ -73,7 +73,9 @@ public class WatchActivity extends Activity {
         mWatches = ShiftDuty.getInstance().getWatches();
         for (Watch watch : mWatches) {
             map = new HashMap<String, Object>();
-            map.put("1", Util.formatDate(watch.getDayInSeconds()));
+            map.put("1",
+                    Util.formatWeek(watch.getDayInSeconds()) + " "
+                            + Util.formatDate(watch.getDayInSeconds()));
 
             int dutyId = watch.getDutyId();
             if (dutyId < 0) {
