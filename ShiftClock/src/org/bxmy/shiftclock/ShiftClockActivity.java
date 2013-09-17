@@ -32,7 +32,7 @@ public class ShiftClockActivity extends Activity {
 
         ShiftDuty.getInstance().init(this);
 
-        long nextAlarmTime = ShiftDuty.getInstance().getNextAlarmTimeMS();
+        long nextAlarmTime = ShiftDuty.getInstance().getNextAlarmTime() * 1000;
         if (nextAlarmTime > 0) {
             setAlarmTime(this, nextAlarmTime, 10 * 1000);
         }

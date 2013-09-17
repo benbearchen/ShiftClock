@@ -7,7 +7,6 @@ import org.bxmy.shiftclock.Util;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class Watch implements Parcelable {
 
@@ -77,10 +76,6 @@ public class Watch implements Parcelable {
     }
 
     public void setDayInSeconds(long dayInSeconds) {
-        if (dayInSeconds % 86400 != 0)
-            Log.d("shiftclock", "Watch dayInSeconds is not %86400: "
-                    + dayInSeconds);
-
         this.mDayInSeconds = dayInSeconds;
     }
 
@@ -98,6 +93,13 @@ public class Watch implements Parcelable {
 
     public void setAfterSeconds(int afterSeconds) {
         this.mAfterSeconds = afterSeconds;
+    }
+
+    public long getRealWatchBeginSeconds() {
+        if (this.mDutyId <= 0)
+            return 0;
+
+        return this.mDayInSeconds - this.mBeforeSeconds;
     }
 
     public static Comparator<Watch> createCompareByDate() {

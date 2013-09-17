@@ -168,8 +168,31 @@ public class ShiftDuty {
     /**
      * 获取下一次闹钟的时间
      */
-    public long getNextAlarmTimeMS() {
-        // TODO: implements real alarm time
+    public long getNextAlarmTime() {
+        long current = Util.dateToSeconds(new Date());
+        long next = 0;
+        Watch nextWatch = null;
+        for (Watch w : mWatches) {
+            long begin = w.getRealWatchBeginSeconds();
+            if (begin == 0 || begin < current)
+                continue;
+
+            if (next == 0 || begin < next) {
+                next = begin;
+                nextWatch = w;
+            }
+        }
+
+        if (nextWatch != null) {
+            Duty duty = getDutyById(nextWatch.getDutyId());
+            int alarm = getDefaultAlarmBeforeSeconds();
+            if (duty != null && duty.getAlarmBeforeSeconds() > 0) {
+                alarm = duty.getAlarmBeforeSeconds();
+            }
+
+            return nextWatch.getRealWatchBeginSeconds() - alarm;
+        }
+
         return 0;
     }
 
