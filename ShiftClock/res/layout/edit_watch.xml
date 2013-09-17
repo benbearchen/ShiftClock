@@ -33,36 +33,6 @@
         android:layout_alignTop="@+id/textView2"
         android:layout_toRightOf="@+id/textView2" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/combo_duty"
-        android:text="@string/label_labelWatchBefore" />
-
-    <TimePicker
-        android:id="@+id/time_beforeWatch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView3"
-        android:layout_toRightOf="@+id/textView3" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/time_beforeWatch"
-        android:text="@string/label_labelWatchAfter" />
-
-    <TimePicker
-        android:id="@+id/time_afterWatch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView4"
-        android:layout_toRightOf="@+id/textView4" />
-
     <Button
         android:id="@+id/button_ok"
         android:layout_width="wrap_content"
@@ -78,5 +48,64 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/button_ok"
         android:text="@string/label_cancel" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/combo_duty"
+        android:baselineAligned="false" >
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_labelWatchBefore" />
+
+            <ToggleButton
+                android:id="@+id/toggle_beforeWatch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TimePicker
+                android:id="@+id/time_beforeWatch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_labelWatchAfter" />
+
+            <ToggleButton
+                android:id="@+id/toggle_afterWatch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TimePicker
+                android:id="@+id/time_afterWatch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

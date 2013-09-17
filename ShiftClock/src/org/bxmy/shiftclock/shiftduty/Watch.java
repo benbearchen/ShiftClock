@@ -89,9 +89,6 @@ public class Watch implements Parcelable {
     }
 
     public void setBeforeSeconds(int beforeSeconds) {
-        if (beforeSeconds < 0)
-            beforeSeconds = 0;
-
         this.mBeforeSeconds = beforeSeconds;
     }
 
@@ -100,9 +97,6 @@ public class Watch implements Parcelable {
     }
 
     public void setAfterSeconds(int afterSeconds) {
-        if (afterSeconds < 0)
-            afterSeconds = 0;
-
         this.mAfterSeconds = afterSeconds;
     }
 
