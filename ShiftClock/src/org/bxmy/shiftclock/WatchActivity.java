@@ -70,7 +70,7 @@ public class WatchActivity extends Activity {
     private ArrayList<HashMap<String, Object>> initWatches() {
         ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map;
-        mWatches = ShiftDuty.getInstance().getWatches();
+        mWatches = ShiftDuty.getInstance().getFutureWatches();
         for (Watch watch : mWatches) {
             map = new HashMap<String, Object>();
             map.put("1",

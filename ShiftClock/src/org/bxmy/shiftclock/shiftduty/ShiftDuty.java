@@ -135,15 +135,20 @@ public class ShiftDuty {
         }
     }
 
-    public Watch[] getWatches() {
+    public Watch[] getFutureWatches() {
+        long today = Util.getDateInSeconds(new Date());
         long lastDay = 0;
-        ArrayList<Watch> sorted = new ArrayList<Watch>(mWatches);
-        Collections.sort(sorted, Watch.createCompareByDate());
+        ArrayList<Watch> sorted = new ArrayList<Watch>();
+        if (!mWatches.isEmpty()) {
+            for (Watch w : mWatches) {
+                if (w.getDayInSeconds() >= today)
+                    sorted.add(w);
+            }
+        }
+
         if (!sorted.isEmpty()) {
-            long maxDay = sorted.get(sorted.size() - 1).getDayInSeconds();
-            long today = Util.getDateInSeconds(new Date());
-            if (maxDay >= today)
-                lastDay = maxDay;
+            Collections.sort(sorted, Watch.createCompareByDate());
+            lastDay = sorted.get(sorted.size() - 1).getDayInSeconds();
         }
 
         Watch[] watches = new Watch[sorted.size() + 7];
