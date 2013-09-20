@@ -9,22 +9,49 @@
         android:layout_height="wrap_content"
         android:text="@string/hello" />
 
-    <TextView
-        android:id="@+id/text_alarmTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_alarmTime" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dp"
+        android:layout_weight="0.20" >
+
+        <TextView
+            android:id="@+id/text_alarmTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/label_alarmTime" />
+
+        <TextView
+            android:id="@+id/text_nextWatch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/text_alarmTime"
+            android:text="@string/label_nextWatch" />
 
         <Button
             android:id="@+id/button_disable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/text_nextWatch"
             android:text="@string/label_disableAlarm" />
+
+        <Button
+            android:id="@+id/button_pauseAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/button_disable"
+            android:layout_toRightOf="@+id/button_disable"
+            android:text="@string/label_buttonPauseAlarm" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
         <Button
             android:id="@+id/button_changeJob"

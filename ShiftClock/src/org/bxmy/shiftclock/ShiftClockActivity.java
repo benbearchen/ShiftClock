@@ -2,6 +2,7 @@ package org.bxmy.shiftclock;
 
 import java.io.IOException;
 
+import org.bxmy.shiftclock.shiftduty.Alarm;
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
 
 import android.app.Activity;
@@ -16,12 +17,16 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class ShiftClockActivity extends Activity {
+
+    private Alarm mCurrentAlarm;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,21 +35,46 @@ public class ShiftClockActivity extends Activity {
 
         ShiftDuty.getInstance().init(this);
 
-        long nextAlarmTime = ShiftDuty.getInstance().getNextAlarmTime();
-        if (nextAlarmTime > 0) {
-            setAlarmTime(this, nextAlarmTime, 10 * 60);
+        binds();
+
+        mCurrentAlarm = ShiftDuty.getInstance().getNextAlarmTime();
+        if (mCurrentAlarm != null) {
+            setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
+                    mCurrentAlarm.getIntervalSeconds());
+            setNextWatch(mCurrentAlarm.getWatchBeginTime());
+        } else {
+            setNextWatch(null);
         }
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_SHUTDOWN);
         registerReceiver(this.mShutdownReceiver, filter);
 
+        checkAlarm(getIntent());
+    }
+
+    private void binds() {
         Button disable = (Button) findViewById(R.id.button_disable);
         disable.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 cancelAlarmTime();
                 stopAlarmRing();
+                findViewById(R.id.button_pauseAlarm).setEnabled(false);
+                if (mCurrentAlarm != null)
+                    mCurrentAlarm.disable();
+            }
+        });
+
+        Button pause = (Button) findViewById(R.id.button_pauseAlarm);
+        pause.setEnabled(false);
+        pause.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.button_pauseAlarm).setEnabled(false);
+                stopAlarmRing();
+                if (mCurrentAlarm != null)
+                    mCurrentAlarm.pause();
             }
         });
 
@@ -121,12 +151,49 @@ public class ShiftClockActivity extends Activity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Log.d("shiftclock", "newIntent " + intent.toString());
+        checkAlarm(intent);
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("shiftclock", "onResume");
+        super.onResume();
+
+        mCurrentAlarm = ShiftDuty.getInstance().getNextAlarmTime();
+        if (mCurrentAlarm != null) {
+            setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
+                    mCurrentAlarm.getIntervalSeconds());
+            setNextWatch(mCurrentAlarm.getWatchBeginTime());
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         shutdown(false);
 
+        stopAlarmRing();
         ShiftDuty.getInstance().close();
 
         super.onDestroy();
+    }
+
+    private void checkAlarm(Intent intent) {
+        if (mCurrentAlarm == null)
+            return;
+
+        if (intent.hasExtra("alarmTime")) {
+            long alarmTime = intent.getLongExtra("alarmTime", 0);
+            Log.d("shiftclock",
+                    "alarmTime " + Util.formatDateTimeToNow(alarmTime));
+            if (mCurrentAlarm.isValidAlarm(alarmTime)) {
+                findViewById(R.id.button_pauseAlarm).setEnabled(true);
+                playAlarmRing(this);
+            }
+        }
     }
 
     private void setAlarmTime(long timeInSeconds) {
@@ -143,6 +210,8 @@ public class ShiftClockActivity extends Activity {
     private void setAlarmTime(Context context, long timeInSeconds,
             long intervalSeconds) {
         Log.i("shiftclock", "set alarm " + this);
+        cancelAlarmTime();
+
         AlarmManager am = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(ACTION_ALARM);
@@ -152,6 +221,15 @@ public class ShiftClockActivity extends Activity {
                 intervalSeconds * 1000, sender);
         this.mAlarmSender = sender;
         setAlarmTime(timeInSeconds);
+    }
+
+    private void setNextWatch(String date) {
+        TextView nextWatch = (TextView) findViewById(R.id.text_nextWatch);
+        nextWatch.setText(R.string.label_nextWatch);
+        if (!TextUtils.isEmpty(date))
+            nextWatch.append(date);
+        else
+            nextWatch.append("尚未设置新的值班");
     }
 
     private void cancelAlarmTime() {
@@ -174,10 +252,12 @@ public class ShiftClockActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             if (ACTION_ALARM.equals(intent.getAction())) {
                 Log.i("shiftclock", "alarm");
-                // 第1步中设置的闹铃时间到，这里可以弹出闹铃提示并播放响铃
-                // 可以继续设置下一次闹铃时间;
-                playAlarmRing(context);
-                return;
+                Intent alarmIntent = new Intent();
+                alarmIntent.setClass(context, ShiftClockActivity.class);
+                alarmIntent.putExtra("alarmTime", Util.now());
+                alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                context.startActivity(alarmIntent);
             }
         }
     }
@@ -211,7 +291,11 @@ public class ShiftClockActivity extends Activity {
     }
 
     private static void playAlarmRing(Context context) {
-        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        Log.d("shiftclock", "play alarm ring");
+        stopAlarmRing();
+
+        Uri uri = RingtoneManager
+                .getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         try {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setDataSource(context, uri);
@@ -231,6 +315,7 @@ public class ShiftClockActivity extends Activity {
     }
 
     private static void stopAlarmRing() {
+        Log.d("shiftclock", "stop alarm ring");
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
         }

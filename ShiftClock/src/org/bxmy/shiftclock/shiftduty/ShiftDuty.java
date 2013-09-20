@@ -176,7 +176,7 @@ public class ShiftDuty {
     /**
      * 获取下一次闹钟的时间
      */
-    public long getNextAlarmTime() {
+    public Alarm getNextAlarmTime() {
         long current = Util.dateToSeconds(new Date());
         long next = 0;
         Watch nextWatch = null;
@@ -192,16 +192,20 @@ public class ShiftDuty {
         }
 
         if (nextWatch != null) {
+            String date = Util.formatDate(nextWatch.getDayInSeconds());
+            long beginSeconds = nextWatch.getRealWatchBeginSeconds();
+
             Duty duty = getDutyById(nextWatch.getDutyId());
-            int alarm = getDefaultAlarmBeforeSeconds();
+            long alarmBefore = getDefaultAlarmBeforeSeconds();
             if (duty != null && duty.getAlarmBeforeSeconds() > 0) {
-                alarm = duty.getAlarmBeforeSeconds();
+                alarmBefore = duty.getAlarmBeforeSeconds();
             }
 
-            return nextWatch.getRealWatchBeginSeconds() - alarm;
+            long interval = getDefaultAlarmIntervalSeconds();
+            return new Alarm(date, beginSeconds, alarmBefore, interval);
         }
 
-        return 0;
+        return null;
     }
 
     /**

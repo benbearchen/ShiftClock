@@ -75,6 +75,10 @@ public final class Util {
         return new Date(seconds * 1000);
     }
 
+    public static long now() {
+        return dateToSeconds(new Date());
+    }
+
     public static long dateToSeconds(Date time) {
         return time.getTime() / 1000;
     }
@@ -124,8 +128,17 @@ public final class Util {
     }
 
     public static String formatTimeToNow(long timeInSeconds) {
-        long now = dateToSeconds(new Date());
+        long now = now();
         return formatTimeByOther(now, timeInSeconds);
+    }
+
+    public static String formatDateTimeToNow(long timeInSeconds) {
+        Date now = new Date();
+        Date t = secondsToDate(timeInSeconds);
+        if (isSameYear(now, t))
+            return formatMonth2Minute(t);
+        else
+            return formatYear2Minute(t);
     }
 
 }
