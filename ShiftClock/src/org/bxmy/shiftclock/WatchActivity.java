@@ -88,28 +88,27 @@ public class WatchActivity extends Activity {
                     continue;
 
                 map.put("2", "值班：" + duty.getName());
+
+                String beginTime = Util.formatTimeByRelatived(
+                        watch.getDayInSeconds(), -watch.getBeforeSeconds());
                 if (watch.getBeforeSeconds() != 0) {
-                    String startTime = Util.formatTimeRelatived(
-                            watch.getDayInSeconds(), -watch.getBeforeSeconds());
                     String adj = watch.getBeforeSeconds() > 0 ? "（提前）" : "（推迟）";
-                    map.put("3", startTime + adj);
-                } else {
-                    map.put("3",
-                            Util.formatTimeIn24Hours(watch.getDayInSeconds()));
+                    beginTime = beginTime + adj;
                 }
+
+                map.put("3", beginTime);
 
                 map.put("4", "至");
 
+                String afterTime = Util.formatTimeByRelatived(
+                        watch.getDayInSeconds(), duty.getDurationSeconds()
+                                + watch.getAfterSeconds());
                 if (watch.getAfterSeconds() != 0) {
-                    String endTime = Util.formatTimeRelatived(
-                            watch.getDayInSeconds(), duty.getDurationSeconds()
-                                    + watch.getAfterSeconds());
-                    String adj = watch.getBeforeSeconds() < 0 ? "（提前）" : "（推迟）";
-                    map.put("5", endTime + adj);
-                } else {
-                    map.put("5", Util.formatTimeRelatived(
-                            watch.getDayInSeconds(), duty.getDurationSeconds()));
+                    String adj = watch.getAfterSeconds() < 0 ? "（提前）" : "（推迟）";
+                    afterTime = afterTime + adj;
                 }
+
+                map.put("5", afterTime);
             }
 
             items.add(map);

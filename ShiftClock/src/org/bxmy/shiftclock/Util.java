@@ -55,7 +55,7 @@ public final class Util {
     }
 
     public static String formatMonthDate(Date date) {
-        return String.format("%2d-%2d", date.getMonth() + 1, date.getDate());
+        return String.format("%d-%d", date.getMonth() + 1, date.getDate());
     }
 
     public static String formatMonth2Minute(Date time) {
@@ -63,7 +63,7 @@ public final class Util {
     }
 
     public static String formatYear2Date(Date date) {
-        return String.format("%4d-%2d-%2d", date.getYear() + 1900,
+        return String.format("%04d-%d-%d", date.getYear() + 1900,
                 date.getMonth() + 1, date.getDate());
     }
 
@@ -105,10 +105,15 @@ public final class Util {
         return weeks[date.getDay() % 7];
     }
 
-    public static String formatTimeRelatived(long beginSeconds,
+    public static String formatTimeByRelatived(long beginSeconds,
             int relativeSeconds) {
-        Date begin = secondsToDate(beginSeconds);
-        Date relative = secondsToDate(beginSeconds + relativeSeconds);
+        return formatTimeByOther(beginSeconds, beginSeconds + relativeSeconds);
+    }
+
+    public static String formatTimeByOther(long firstTimeInSeconds,
+            long otherTimeInSeconds) {
+        Date begin = secondsToDate(firstTimeInSeconds);
+        Date relative = secondsToDate(otherTimeInSeconds);
         if (isSameDay(begin, relative)) {
             return formatHourMinute(relative);
         } else if (isSameYear(begin, relative)) {
@@ -117,4 +122,10 @@ public final class Util {
             return formatYear2Minute(relative);
         }
     }
+
+    public static String formatTimeToNow(long timeInSeconds) {
+        long now = dateToSeconds(new Date());
+        return formatTimeByOther(now, timeInSeconds);
+    }
+
 }

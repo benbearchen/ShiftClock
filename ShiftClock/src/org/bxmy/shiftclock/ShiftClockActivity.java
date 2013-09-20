@@ -1,8 +1,6 @@
 package org.bxmy.shiftclock;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
 
@@ -32,9 +30,9 @@ public class ShiftClockActivity extends Activity {
 
         ShiftDuty.getInstance().init(this);
 
-        long nextAlarmTime = ShiftDuty.getInstance().getNextAlarmTime() * 1000;
+        long nextAlarmTime = ShiftDuty.getInstance().getNextAlarmTime();
         if (nextAlarmTime > 0) {
-            setAlarmTime(this, nextAlarmTime, 10 * 1000);
+            setAlarmTime(this, nextAlarmTime, 10 * 60);
         }
 
         IntentFilter filter = new IntentFilter();
@@ -131,28 +129,29 @@ public class ShiftClockActivity extends Activity {
         super.onDestroy();
     }
 
-    private void setAlarmTime(long timeInMillis) {
+    private void setAlarmTime(long timeInSeconds) {
         TextView label = (TextView) findViewById(R.id.text_alarmTime);
         label.setText(R.string.label_alarmTime);
-        if (timeInMillis != 0) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  HH:mm");
-            String t = sdf.format(new Date(timeInMillis));
+        if (timeInSeconds != 0) {
+            String t = Util.formatTimeToNow(timeInSeconds);
             label.append(t);
         } else {
             label.append("禁用");
         }
     }
 
-    private void setAlarmTime(Context context, long timeInMillis, long interval) {
+    private void setAlarmTime(Context context, long timeInSeconds,
+            long intervalSeconds) {
         Log.i("shiftclock", "set alarm " + this);
         AlarmManager am = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(ACTION_ALARM);
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, timeInMillis, interval, sender);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, timeInSeconds * 1000,
+                intervalSeconds * 1000, sender);
         this.mAlarmSender = sender;
-        setAlarmTime(timeInMillis);
+        setAlarmTime(timeInSeconds);
     }
 
     private void cancelAlarmTime() {
