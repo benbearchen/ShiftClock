@@ -21,7 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     protected String mDbName;
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static ArrayList<ITableBase> sTables = new ArrayList<ITableBase>();
 
@@ -139,13 +139,30 @@ public class DBHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor select(ITableBase table, String where, String[] whereArgs) {
+        String tableName = table.getTableName();
+        String[] fields = table.getAllFields();
+        Cursor cursor = this.mDb.query(tableName, // Table Name
+                fields, // Columns to return
+                where, // SQL WHERE
+                whereArgs, // Selection Args
+                null, // SQL GROUP BY
+                null, // SQL HAVING
+                fields[0]); // SQL ORDER BY
+        return cursor;
+    }
+
     public int insert(ITableBase table, ContentValues values) {
         return (int) this.mDb.insert(table.getTableName(), null, values);
     }
 
-    public void update(ITableBase table, ContentValues values, String where,
+    public int update(ITableBase table, ContentValues values, String where,
             String[] whereArgs) {
-        this.mDb.update(table.getTableName(), values, where, whereArgs);
+        return this.mDb.update(table.getTableName(), values, where, whereArgs);
+    }
+
+    public int replace(ITableBase table, ContentValues values) {
+        return (int) this.mDb.replace(table.getTableName(), null, values);
     }
 
     public void recreateTable(ITableBase table) {

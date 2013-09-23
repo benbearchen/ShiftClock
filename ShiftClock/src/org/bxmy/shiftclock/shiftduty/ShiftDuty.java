@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.bxmy.shiftclock.Util;
+import org.bxmy.shiftclock.db.ConfigTable;
 import org.bxmy.shiftclock.db.DBHelper;
 import org.bxmy.shiftclock.db.DutyTable;
 import org.bxmy.shiftclock.db.WatchTable;
@@ -25,6 +26,8 @@ public class ShiftDuty {
     private DutyTable mDutyTable;
 
     private WatchTable mWatchTable;
+
+    private ConfigTable mConfigTable;
 
     public static synchronized ShiftDuty getInstance() {
         if (sShiftDuty == null) {
@@ -224,22 +227,40 @@ public class ShiftDuty {
      * 获取默认提前闹铃时间。初始为半小时
      */
     public int getDefaultAlarmBeforeSeconds() {
-        return 1800;
+        int defaultAlarmBeforeSeconds = 1800;
+        if (mConfigTable != null) {
+            return mConfigTable.getIntByName("alarmBefore",
+                    defaultAlarmBeforeSeconds);
+        }
+
+        return defaultAlarmBeforeSeconds;
     }
 
     public void setDefaultAlarmBeforeSeconds(int alarmBeforeSeconds) {
-        // TODO:
+        if (alarmBeforeSeconds > 0 && mConfigTable != null) {
+            mConfigTable.setByName("alarmBefore",
+                    String.valueOf(alarmBeforeSeconds));
+        }
     }
 
     /**
      * 获取默认的闹铃间隔。默认为十分钟
      */
     public int getDefaultAlarmIntervalSeconds() {
-        return 600;
+        int defaultAlarmIntervalSeconds = 600;
+        if (mConfigTable != null) {
+            return mConfigTable.getIntByName("alarmInterval",
+                    defaultAlarmIntervalSeconds);
+        }
+
+        return defaultAlarmIntervalSeconds;
     }
 
     public void setDefaultAlarmIntervalSeconds(int alarmIntervalSeconds) {
-        // TODO:
+        if (alarmIntervalSeconds > 0 && mConfigTable != null) {
+            mConfigTable.setByName("alarmInterval",
+                    String.valueOf(alarmIntervalSeconds));
+        }
     }
 
     private void initDb(Context context) {
@@ -248,6 +269,9 @@ public class ShiftDuty {
 
         mWatchTable = new WatchTable();
         DBHelper.addTable(mWatchTable);
+
+        mConfigTable = new ConfigTable();
+        DBHelper.addTable(mConfigTable);
 
         mDb = DBHelper.createInstance(context, "shiftduty");
     }
