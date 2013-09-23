@@ -180,6 +180,14 @@ public class EditWatchActivity extends Activity {
                 afterSeconds = -afterSeconds;
         }
 
+        int totalWatchSeconds = beforeSeconds + duty.getDurationSeconds()
+                + afterSeconds;
+        if (totalWatchSeconds <= 0) {
+            Toast.makeText(getApplicationContext(), "实际上班时间至少要那么一分一秒吧……",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (mWatch.getId() < 0) {
             ShiftDuty.getInstance().newWatch(dutyId, dayInSeconds,
                     beforeSeconds, afterSeconds);
