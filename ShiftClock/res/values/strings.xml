@@ -41,5 +41,6 @@
     <string name="label_labelWatchAfter">下班调整</string>
     <string name="label_nextWatch">下次值班：</string>
     <string name="label_buttonPauseAlarm">推迟闹铃</string>
+    <string name="label_dutyTime">班种设定：</string>
 
 </resources>

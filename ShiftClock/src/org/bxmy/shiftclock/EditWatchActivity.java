@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -27,6 +28,8 @@ public class EditWatchActivity extends Activity {
     private DatePicker mWatchDay;
 
     private Spinner mComboDuty;
+
+    private TextView mDutyTime;
 
     private ToggleButton mToggleBefore;
 
@@ -58,6 +61,8 @@ public class EditWatchActivity extends Activity {
         for (String duty : ShiftDuty.getInstance().getDutyNames())
             dutyNames.add(duty);
 
+        mDutyTime = (TextView) findViewById((R.id.label_dutyTime));
+
         ArrayAdapter<String> dutyAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, dutyNames);
         mComboDuty.setAdapter(dutyAdapter);
@@ -67,9 +72,23 @@ public class EditWatchActivity extends Activity {
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                     int arg2, long arg3) {
                 if (arg2 == 0) {
+                    mDutyTime.setText("");
                     mBeforeTime.setEnabled(false);
                     mAfterTime.setEnabled(false);
                 } else {
+                    Duty duty = ShiftDuty.getInstance().getDutyById(arg2);
+                    if (duty != null) {
+                        mDutyTime.setText(R.string.label_dutyTime);
+                        mDutyTime.append(Util.formatTimeIn24Hours(duty
+                                .getStartSecondsInDay()));
+                        mDutyTime.append("-");
+                        mDutyTime.append(Util.formatTimeIn24Hours(duty
+                                .getStartSecondsInDay()
+                                + duty.getDurationSeconds()));
+                    } else {
+                        mDutyTime.setText("");
+                    }
+
                     mBeforeTime.setEnabled(true);
                     mAfterTime.setEnabled(true);
                 }
@@ -178,14 +197,14 @@ public class EditWatchActivity extends Activity {
             afterSeconds = Util.getTime(mAfterTime);
             if (!mToggleAfter.isChecked())
                 afterSeconds = -afterSeconds;
-        }
 
-        int totalWatchSeconds = beforeSeconds + duty.getDurationSeconds()
-                + afterSeconds;
-        if (totalWatchSeconds <= 0) {
-            Toast.makeText(getApplicationContext(), "实际上班时间至少要那么一分一秒吧……",
-                    Toast.LENGTH_SHORT).show();
-            return;
+            int totalWatchSeconds = beforeSeconds + duty.getDurationSeconds()
+                    + afterSeconds;
+            if (totalWatchSeconds <= 0) {
+                Toast.makeText(getApplicationContext(), "实际上班时间至少要那么一分一秒吧……",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         if (mWatch.getId() < 0) {
