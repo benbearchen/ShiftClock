@@ -4,7 +4,7 @@
     <string name="hello">欢迎使用 ShiftClock！</string>
     <string name="app_name">ShiftClock</string>
     <string name="app_description">基于轮班表的闹钟</string>
-    <string name="label_alarmTime">下次闹铃时间：</string>
+    <string name="label_alarmTime">预计闹铃时间：</string>
     <string name="label_disableAlarm">停止本次上班闹铃</string>
     <string name="label_setDuty">设置班种</string>
     <string name="label_setWatch">值班调整</string>
@@ -40,6 +40,6 @@
     <string name="label_labelWatchBefore">上班调整</string>
     <string name="label_labelWatchAfter">下班调整</string>
     <string name="label_nextWatch">下次值班：</string>
-    <string name="label_buttonPauseAlarm">暂停闹铃</string>
+    <string name="label_buttonPauseAlarm">推迟闹铃</string>
 
 </resources>

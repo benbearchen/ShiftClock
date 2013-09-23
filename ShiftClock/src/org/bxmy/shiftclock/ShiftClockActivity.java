@@ -37,12 +37,14 @@ public class ShiftClockActivity extends Activity {
 
         binds();
 
+        // 启动分两种情况：闹铃启动和桌面启动
         mCurrentAlarm = ShiftDuty.getInstance().getNextAlarmTime();
         if (mCurrentAlarm != null) {
             setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
             setNextWatch(mCurrentAlarm.getWatchBeginTime());
         } else {
+            cancelAlarmTime(this);
             setNextWatch(null);
         }
 
@@ -61,8 +63,10 @@ public class ShiftClockActivity extends Activity {
                 cancelAlarmTime();
                 stopAlarmRing();
                 findViewById(R.id.button_pauseAlarm).setEnabled(false);
-                if (mCurrentAlarm != null)
+                if (mCurrentAlarm != null) {
                     mCurrentAlarm.disable();
+                    updateCurrentAlarm();
+                }
             }
         });
 
@@ -73,8 +77,10 @@ public class ShiftClockActivity extends Activity {
             public void onClick(View v) {
                 findViewById(R.id.button_pauseAlarm).setEnabled(false);
                 stopAlarmRing();
-                if (mCurrentAlarm != null)
+                if (mCurrentAlarm != null) {
                     mCurrentAlarm.pause();
+                    updateCurrentAlarm();
+                }
             }
         });
 
@@ -163,11 +169,18 @@ public class ShiftClockActivity extends Activity {
         Log.d("shiftclock", "onResume");
         super.onResume();
 
-        mCurrentAlarm = ShiftDuty.getInstance().getNextAlarmTime();
+        Alarm nextAlarm = ShiftDuty.getInstance().getNextAlarmTime();
+        if (nextAlarm == null || nextAlarm.isSame(mCurrentAlarm))
+            return;
+
+        mCurrentAlarm = nextAlarm;
         if (mCurrentAlarm != null) {
             setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
             setNextWatch(mCurrentAlarm.getWatchBeginTime());
+        } else {
+            cancelAlarmTime(this);
+            setNextWatch(null);
         }
     }
 
@@ -187,12 +200,21 @@ public class ShiftClockActivity extends Activity {
 
         if (intent.hasExtra("alarmTime")) {
             long alarmTime = intent.getLongExtra("alarmTime", 0);
-            Log.d("shiftclock",
-                    "alarmTime " + Util.formatDateTimeToNow(alarmTime));
             if (mCurrentAlarm.isValidAlarm(alarmTime)) {
                 findViewById(R.id.button_pauseAlarm).setEnabled(true);
                 playAlarmRing(this);
             }
+        }
+    }
+
+    private void updateCurrentAlarm() {
+        if (mCurrentAlarm != null) {
+            setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
+                    mCurrentAlarm.getIntervalSeconds());
+            setAlarmTime(mCurrentAlarm.getNextAlarmSeconds());
+        } else {
+            cancelAlarmTime();
+            setAlarmTime(0);
         }
     }
 

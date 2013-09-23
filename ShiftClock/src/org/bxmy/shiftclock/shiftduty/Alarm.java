@@ -78,10 +78,6 @@ public class Alarm {
         if (alarmTime < first)
             return false;
 
-        long paused = pausedSeconds;
-        if (paused >= first)
-            return false;
-
         if (alarmTime > getBeginSeconds())
             ;// TODO: 是否已过上班时间了，就不认为是合法的？
 
@@ -92,8 +88,16 @@ public class Alarm {
         if (disabled)
             return 0;
 
-        long first = getBeginSeconds() - getAlarmBeforeSeconds();
         long now = Util.now();
+        if (now >= getBeginSeconds()) {
+            if (pausedSeconds == 0) {
+                return getBeginSeconds();
+            } else {
+                return pausedSeconds + getIntervalSeconds();
+            }
+        }
+
+        long first = getBeginSeconds() - getAlarmBeforeSeconds();
         if (now < first)
             return first;
 
@@ -103,5 +107,14 @@ public class Alarm {
 
     public String getWatchBeginTime() {
         return Util.formatDateTimeToNow(getBeginSeconds());
+    }
+
+    public boolean isSame(Alarm old) {
+        if (old == null)
+            return false;
+
+        return this.getDate().equals(old.getDate())
+                && this.getBeginSeconds() == old.getBeginSeconds()
+                && this.getIntervalSeconds() == old.getIntervalSeconds();
     }
 }

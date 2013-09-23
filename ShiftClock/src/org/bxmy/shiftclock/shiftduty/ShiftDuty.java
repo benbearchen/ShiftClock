@@ -182,7 +182,19 @@ public class ShiftDuty {
         Watch nextWatch = null;
         for (Watch w : mWatches) {
             long begin = w.getRealWatchBeginSeconds();
-            if (begin == 0 || begin < current)
+            if (begin == 0)
+                continue;
+
+            Duty duty = null;
+            if (w.getDutyId() > 0)
+                duty = getDutyById(w.getDutyId());
+
+            if (duty == null)
+                continue;
+
+            long end = w.getDayInSeconds() + duty.getDurationSeconds()
+                    + w.getAfterSeconds();
+            if (begin < current && end < current)
                 continue;
 
             if (next == 0 || begin < next) {
