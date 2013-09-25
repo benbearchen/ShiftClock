@@ -4,73 +4,57 @@ import org.bxmy.shiftclock.Util;
 
 public class Alarm {
 
-    private String date;
+    private Watch watch;
 
-    private long beginSeconds;
+    private int alarmBeforeSeconds;
 
-    private long alarmBeforeSeconds;
+    private int intervalSeconds;
 
-    private long intervalSeconds;
-
-    private boolean disabled;
-
-    private long pausedSeconds;
-
-    public Alarm(String date, long beginSeconds, long alarmBeforeSeconds,
-            long intervalSeconds) {
-        this.date = date;
-        this.beginSeconds = beginSeconds;
+    public Alarm(Watch watch, int alarmBeforeSeconds, int intervalSeconds) {
+        this.watch = watch;
         this.alarmBeforeSeconds = alarmBeforeSeconds;
         this.intervalSeconds = intervalSeconds;
-        this.disabled = false;
-        this.pausedSeconds = 0;
     }
 
     public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+        return Util.formatDate(watch.getDayInSeconds());
     }
 
     public long getBeginSeconds() {
-        return beginSeconds;
-    }
-
-    public void setBeginSeconds(long beginSeconds) {
-        this.beginSeconds = beginSeconds;
+        return watch.getDayInSeconds() - watch.getBeforeSeconds();
     }
 
     public long getAlarmBeforeSeconds() {
         return alarmBeforeSeconds;
     }
 
-    public void setAlarmBeforeSeconds(long alarmBeforeSeconds) {
-        this.alarmBeforeSeconds = alarmBeforeSeconds;
-    }
-
     public long getIntervalSeconds() {
         return intervalSeconds;
     }
 
-    public void setIntervalSeconds(long intervalSeconds) {
-        this.intervalSeconds = intervalSeconds;
-    }
-
     public void disable() {
-        this.disabled = true;
+        if (watch.getAlarmStopped() == 0) {
+            watch.setAlarmStopped(1);
+            if (watch.getAlarmPausedInSeconds() > 0)
+                watch.setAlarmPasuedInSeconds(0);
+
+            ShiftDuty.getInstance().updateWatch(watch);
+        }
     }
 
     public void pause() {
-        this.pausedSeconds = Util.now();
+        if (watch.getAlarmStopped() == 0) {
+            watch.setAlarmPasuedInSeconds(Util.now());
+            ShiftDuty.getInstance().updateWatch(watch);
+        }
     }
 
     public boolean isValidAlarm(long alarmTime) {
-        if (disabled)
+        if (watch.getAlarmStopped() != 0)
             return false;
 
-        if (pausedSeconds > 0 && alarmTime < pausedSeconds) {
+        if (watch.getAlarmPausedInSeconds() > 0
+                && alarmTime < watch.getAlarmPausedInSeconds()) {
             return false;
         }
 
@@ -78,22 +62,19 @@ public class Alarm {
         if (alarmTime < first)
             return false;
 
-        if (alarmTime > getBeginSeconds())
-            ;// TODO: 是否已过上班时间了，就不认为是合法的？
-
         return true;
     }
 
     public long getNextAlarmSeconds() {
-        if (disabled)
+        if (watch.getAlarmStopped() != 0)
             return 0;
 
         long now = Util.now();
         if (now >= getBeginSeconds()) {
-            if (pausedSeconds == 0) {
+            if (watch.getAlarmPausedInSeconds() == 0) {
                 return getBeginSeconds();
             } else {
-                return pausedSeconds + getIntervalSeconds();
+                return watch.getAlarmPausedInSeconds() + getIntervalSeconds();
             }
         }
 

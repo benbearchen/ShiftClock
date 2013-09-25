@@ -187,7 +187,7 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         Watch nextWatch = null;
         for (Watch w : mWatches) {
             long begin = w.getRealWatchBeginSeconds();
-            if (begin == 0)
+            if (begin == 0 || w.getAlarmStopped() != 0)
                 continue;
 
             Duty duty = null;
@@ -209,17 +209,14 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         }
 
         if (nextWatch != null) {
-            String date = Util.formatDate(nextWatch.getDayInSeconds());
-            long beginSeconds = nextWatch.getRealWatchBeginSeconds();
-
             Duty duty = getDutyById(nextWatch.getDutyId());
-            long alarmBefore = getDefaultAlarmBeforeSeconds();
+            int alarmBefore = getDefaultAlarmBeforeSeconds();
             if (duty != null && duty.getAlarmBeforeSeconds() > 0) {
                 alarmBefore = duty.getAlarmBeforeSeconds();
             }
 
-            long interval = getDefaultAlarmIntervalSeconds();
-            return new Alarm(date, beginSeconds, alarmBefore, interval);
+            int interval = getDefaultAlarmIntervalSeconds();
+            return new Alarm(nextWatch, alarmBefore, interval);
         }
 
         return null;
