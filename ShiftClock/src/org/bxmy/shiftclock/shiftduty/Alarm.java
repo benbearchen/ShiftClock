@@ -24,6 +24,11 @@ public class Alarm {
         return watch.getDayInSeconds() - watch.getBeforeSeconds();
     }
 
+    public long getEndSeconds() {
+        return watch.getDayInSeconds() + watch.getDutyDurationSeconds()
+                + watch.getAfterSeconds();
+    }
+
     public long getAlarmBeforeSeconds() {
         return alarmBeforeSeconds;
     }
@@ -86,8 +91,9 @@ public class Alarm {
                 * intervalSeconds;
     }
 
-    public String getWatchBeginTime() {
-        return Util.formatDateTimeToNow(getBeginSeconds());
+    public String getWatchTime() {
+        return Util.formatDateTimeToNow(getBeginSeconds()) + " 至 "
+                + Util.formatTimeByOther(getBeginSeconds(), getEndSeconds());
     }
 
     public boolean isSame(Alarm old) {

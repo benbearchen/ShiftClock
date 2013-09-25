@@ -42,7 +42,7 @@ public class ShiftClockActivity extends Activity {
         if (mCurrentAlarm != null) {
             setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
-            setNextWatch(mCurrentAlarm.getWatchBeginTime());
+            setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
             cancelAlarmTime(this);
             setNextWatch(null);
@@ -177,7 +177,7 @@ public class ShiftClockActivity extends Activity {
         if (mCurrentAlarm != null) {
             setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
-            setNextWatch(mCurrentAlarm.getWatchBeginTime());
+            setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
             cancelAlarmTime(this);
             setNextWatch(null);
