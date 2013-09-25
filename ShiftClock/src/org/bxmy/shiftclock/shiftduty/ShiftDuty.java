@@ -13,7 +13,7 @@ import org.bxmy.shiftclock.db.WatchTable;
 import android.content.Context;
 import android.util.Log;
 
-public class ShiftDuty {
+public class ShiftDuty implements DBHelper.IDBEvent {
 
     private static ShiftDuty sShiftDuty;
 
@@ -273,7 +273,7 @@ public class ShiftDuty {
         mConfigTable = new ConfigTable();
         DBHelper.addTable(mConfigTable);
 
-        mDb = DBHelper.createInstance(context, "shiftduty");
+        mDb = DBHelper.createInstance(context, "shiftduty", this);
     }
 
     private void loadDuties() {
@@ -285,6 +285,28 @@ public class ShiftDuty {
     private void loadWatches() {
         if (mDb != null && mWatchTable != null) {
             mWatches = mWatchTable.selectAll();
+        }
+    }
+
+    @Override
+    public void bind(DBHelper db) {
+        mDb = db;
+    }
+
+    @Override
+    public void onCreated() {
+        // do some initialization
+        if (mDb != null && mConfigTable != null) {
+            mConfigTable.setByName("alarmBefore", String.valueOf(1800));
+        }
+    }
+
+    @Override
+    public void onUpgraded(int oldVersion, int newVersion) {
+        if (oldVersion < newVersion) {
+            // upgrade fix
+        } else {
+            // down-grade fix
         }
     }
 }

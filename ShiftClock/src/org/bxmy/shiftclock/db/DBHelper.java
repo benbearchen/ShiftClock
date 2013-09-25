@@ -21,18 +21,25 @@ public class DBHelper extends SQLiteOpenHelper {
 
     protected String mDbName;
 
+    private IDBEvent mDbEvent;
+
     private static final int DATABASE_VERSION = 3;
 
     private static ArrayList<ITableBase> sTables = new ArrayList<ITableBase>();
 
-    public static DBHelper createInstance(Context context, String dbName) {
-        return new DBHelper(context, dbName);
+    public static DBHelper createInstance(Context context, String dbName,
+            IDBEvent dbEvent) {
+        return new DBHelper(context, dbName, dbEvent);
     }
 
-    private DBHelper(Context context, String dbName) {
+    private DBHelper(Context context, String dbName, IDBEvent dbEvent) {
         super(context, dbName, null, DATABASE_VERSION);
 
         this.mDbName = dbName;
+        this.mDbEvent = dbEvent;
+        if (this.mDbEvent != null)
+            this.mDbEvent.bind(this);
+
         for (int i = 0; i < sTables.size(); ++i) {
             ITableBase table = sTables.get(i);
             table.bind(this);
@@ -49,6 +56,9 @@ public class DBHelper extends SQLiteOpenHelper {
             ITableBase table = sTables.get(i);
             db.execSQL(table.getCreateSQL());
         }
+
+        if (this.mDbEvent != null)
+            this.mDbEvent.onCreated();
     }
 
     @Override
@@ -58,6 +68,18 @@ public class DBHelper extends SQLiteOpenHelper {
         for (int i = 0; i < sTables.size(); ++i) {
             sTables.get(i).onUpgrade(oldVersion, newVersion);
         }
+
+        if (this.mDbEvent != null)
+            this.mDbEvent.onUpgraded(oldVersion, newVersion);
+    }
+
+    public static interface IDBEvent {
+
+        public void bind(DBHelper db);
+
+        public void onCreated();
+
+        public void onUpgraded(int oldVersion, int newVersion);
     }
 
     public static abstract class ITableBase {
