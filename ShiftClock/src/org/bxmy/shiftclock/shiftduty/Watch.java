@@ -23,6 +23,11 @@ public class Watch implements Parcelable {
     private long mDayInSeconds;
 
     /**
+     * 班种指定的值班时长
+     */
+    private int mDutyDurationSeconds;
+
+    /**
      * 是否提前值班。0 表示不提前，正数表示提前的时间
      */
     private int mBeforeSeconds;
@@ -31,6 +36,16 @@ public class Watch implements Parcelable {
      * 是否延后落班。0 表示不延后，正数表示延后的时间
      */
     private int mAfterSeconds;
+
+    /**
+     * 闹钟是否已经被停止
+     */
+    private int mAlarmStopped;
+
+    /**
+     * 闹钟被暂停闹铃的时刻
+     */
+    private long mAlarmPasuedInSeconds;
 
     public static Watch createEmptyInDays(long lastDayInSeconds, int days) {
         Date date;
@@ -43,20 +58,24 @@ public class Watch implements Parcelable {
 
         date = Util.secondsToDate(Util.dateToSeconds(date) + days * 86400L);
         date = new Date(date.getYear(), date.getMonth(), date.getDate());
-        return new Watch(-1, -1, Util.dateToSeconds(date), 0, 0);
+        return new Watch(-1, -1, Util.dateToSeconds(date), 0, 0, 0, 0, 0);
     }
 
     public Watch(int id) {
         this.mId = id;
     }
 
-    public Watch(int id, int dutyId, long dayInSeconds, int beforeSeconds,
-            int afterSeconds) {
+    public Watch(int id, int dutyId, long dayInSeconds, int durationSeconds,
+            int beforeSeconds, int afterSeconds, int alarmStopped,
+            long alarmPasuedInSeconds) {
         this.mId = id;
         setDutyId(dutyId);
         setDayInSeconds(dayInSeconds);
+        setDutyDurationSeconds(durationSeconds);
         setBeforeSeconds(beforeSeconds);
         setAfterSeconds(afterSeconds);
+        setAlarmStopped(alarmStopped);
+        setAlarmPasuedInSeconds(alarmPasuedInSeconds);
     }
 
     public int getId() {
@@ -79,6 +98,14 @@ public class Watch implements Parcelable {
         this.mDayInSeconds = dayInSeconds;
     }
 
+    public int getDutyDurationSeconds() {
+        return this.mDutyDurationSeconds;
+    }
+
+    public void setDutyDurationSeconds(int durationSeconds) {
+        this.mDutyDurationSeconds = durationSeconds;
+    }
+
     public int getBeforeSeconds() {
         return this.mBeforeSeconds;
     }
@@ -93,6 +120,22 @@ public class Watch implements Parcelable {
 
     public void setAfterSeconds(int afterSeconds) {
         this.mAfterSeconds = afterSeconds;
+    }
+
+    public int getAlarmStopped() {
+        return this.mAlarmStopped;
+    }
+
+    public void setAlarmStopped(int alarmStopped) {
+        this.mAlarmStopped = alarmStopped;
+    }
+
+    public long getAlarmPausedInSeconds() {
+        return this.mAlarmPasuedInSeconds;
+    }
+
+    public void setAlarmPasuedInSeconds(long alarmPasuedInSeconds) {
+        this.mAlarmPasuedInSeconds = alarmPasuedInSeconds;
     }
 
     public long getRealWatchBeginSeconds() {
@@ -125,11 +168,15 @@ public class Watch implements Parcelable {
             int id = source.readInt();
             int dutyId = source.readInt();
             long dayInSeconds = source.readLong();
+            int dutyDurationSeconds = source.readInt();
             int beforeSeconds = source.readInt();
             int afterSeconds = source.readInt();
+            int alarmStopped = source.readInt();
+            long alarmPausedInSeconds = source.readLong();
 
-            return new Watch(id, dutyId, dayInSeconds, beforeSeconds,
-                    afterSeconds);
+            return new Watch(id, dutyId, dayInSeconds, dutyDurationSeconds,
+                    beforeSeconds, afterSeconds, alarmStopped,
+                    alarmPausedInSeconds);
         }
 
         @Override
@@ -148,8 +195,11 @@ public class Watch implements Parcelable {
         dest.writeInt(mId);
         dest.writeInt(mDutyId);
         dest.writeLong(mDayInSeconds);
+        dest.writeInt(mDutyDurationSeconds);
         dest.writeInt(mBeforeSeconds);
         dest.writeInt(mAfterSeconds);
+        dest.writeInt(mAlarmStopped);
+        dest.writeLong(mAlarmPasuedInSeconds);
     }
 
 }

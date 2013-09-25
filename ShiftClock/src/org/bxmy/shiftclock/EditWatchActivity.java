@@ -186,9 +186,11 @@ public class EditWatchActivity extends Activity {
             }
         }
 
+        int durationSeconds = 0;
         int beforeSeconds = 0;
         int afterSeconds = 0;
         if (duty != null) {
+            durationSeconds = duty.getDurationSeconds();
             dayInSeconds += duty.getStartSecondsInDay();
             beforeSeconds = Util.getTime(mBeforeTime);
             if (mToggleBefore.isChecked())
@@ -209,10 +211,10 @@ public class EditWatchActivity extends Activity {
 
         if (mWatch.getId() < 0) {
             ShiftDuty.getInstance().newWatch(dutyId, dayInSeconds,
-                    beforeSeconds, afterSeconds);
+                    durationSeconds, beforeSeconds, afterSeconds);
         } else {
             Watch newWatch = new Watch(mWatch.getId(), dutyId, dayInSeconds,
-                    beforeSeconds, afterSeconds);
+                    durationSeconds, beforeSeconds, afterSeconds, 0, 0);
             ShiftDuty.getInstance().updateWatch(newWatch);
         }
 

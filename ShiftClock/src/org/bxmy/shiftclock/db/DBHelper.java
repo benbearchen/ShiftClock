@@ -23,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private IDBEvent mDbEvent;
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static ArrayList<ITableBase> sTables = new ArrayList<ITableBase>();
 

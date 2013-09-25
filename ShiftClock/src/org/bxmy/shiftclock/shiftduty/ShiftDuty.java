@@ -29,6 +29,8 @@ public class ShiftDuty implements DBHelper.IDBEvent {
 
     private ConfigTable mConfigTable;
 
+    private boolean mLoaded;
+
     public static synchronized ShiftDuty getInstance() {
         if (sShiftDuty == null) {
             sShiftDuty = new ShiftDuty();
@@ -42,8 +44,8 @@ public class ShiftDuty implements DBHelper.IDBEvent {
 
     public void init(Context context) {
         initDb(context);
-        loadDuties();
-        loadWatches();
+
+        load();
     }
 
     public void close() {
@@ -114,11 +116,11 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         return null;
     }
 
-    public Watch newWatch(int dutyId, long dayInSeconds, int beforeSeconds,
-            int afterSeconds) {
+    public Watch newWatch(int dutyId, long dayInSeconds, int durationSeconds,
+            int beforeSeconds, int afterSeconds) {
         if (mDb != null && mWatchTable != null) {
             Watch watch = mWatchTable.insert(dutyId, dayInSeconds,
-                    beforeSeconds, afterSeconds);
+                    durationSeconds, beforeSeconds, afterSeconds);
             mWatches.add(watch);
             return watch;
         }
@@ -276,6 +278,16 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         mDb = DBHelper.createInstance(context, "shiftduty", this);
     }
 
+    private void load() {
+        if (mLoaded)
+            return;
+
+        mLoaded = true;
+
+        loadDuties();
+        loadWatches();
+    }
+
     private void loadDuties() {
         if (mDb != null && mDutyTable != null) {
             mDuties = mDutyTable.selectAll();
@@ -295,6 +307,8 @@ public class ShiftDuty implements DBHelper.IDBEvent {
 
     @Override
     public void onCreated() {
+        load();
+
         // do some initialization
         if (mDb != null && mConfigTable != null) {
             mConfigTable.setByName("alarmBefore", String.valueOf(1800));
@@ -303,8 +317,28 @@ public class ShiftDuty implements DBHelper.IDBEvent {
 
     @Override
     public void onUpgraded(int oldVersion, int newVersion) {
+        load();
+
         if (oldVersion < newVersion) {
             // upgrade fix
+            if (oldVersion < 4) {
+                // fix watch duration, alarmStopped, alarmPaused
+                for (Watch w : mWatches) {
+                    if (w.getDutyId() > 0) {
+                        Duty duty = getDutyById(w.getDutyId());
+                        if (duty != null) {
+                            Log.d("shiftclock",
+                                    "update Watch: "
+                                            + Util.formatDate(w
+                                                    .getDayInSeconds()));
+                            w.setDutyDurationSeconds(duty.getDurationSeconds());
+                            if (mWatchTable != null) {
+                                mWatchTable.update(w);
+                            }
+                        }
+                    }
+                }
+            }
         } else {
             // down-grade fix
         }

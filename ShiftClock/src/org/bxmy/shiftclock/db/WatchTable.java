@@ -18,7 +18,7 @@ public class WatchTable extends DBHelper.ITableBase {
 
     @Override
     public void onUpgrade(int oldVersion, int newVersion) {
-        final int CURRENT_VERSION = 2;
+        final int CURRENT_VERSION = 4;
         ArrayList<Watch> watches = null;
         try {
             if (oldVersion < CURRENT_VERSION)
@@ -39,12 +39,16 @@ public class WatchTable extends DBHelper.ITableBase {
         return "create table " + getTableName()
                 + " (_id integer primary key autoincrement, "
                 + " dutyid integer not null, " + " day bigint not null, "
-                + " before integer not null, " + " after integer not null)";
+                + " duration integer not null, " + " before integer not null, "
+                + " after integer not null, "
+                + " alarmStopped integer not null, "
+                + " alarmPaused bigint not null)";
     }
 
     @Override
     public String[] getAllFields() {
-        return new String[] { "_id", "dutyid", "day", "before", "after" };
+        return new String[] { "_id", "dutyid", "day", "duration", "before",
+                "after", "alarmStopped", "alarmPaused" };
     }
 
     public ArrayList<Watch> selectAll() {
@@ -57,11 +61,15 @@ public class WatchTable extends DBHelper.ITableBase {
                 int id = cursor.getInt(0);
                 int dutyId = cursor.getInt(1);
                 long day = cursor.getLong(2);
-                int before = cursor.getInt(3);
-                int after = cursor.getInt(4);
+                int duration = cursor.getInt(3);
+                int before = cursor.getInt(4);
+                int after = cursor.getInt(5);
+                int alarmStopped = cursor.getInt(6);
+                long alarmPaused = cursor.getLong(7);
 
                 try {
-                    Watch watch = new Watch(id, dutyId, day, before, after);
+                    Watch watch = new Watch(id, dutyId, day, duration, before,
+                            after, alarmStopped, alarmPaused);
                     watches.add(watch);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -74,24 +82,29 @@ public class WatchTable extends DBHelper.ITableBase {
         return watches;
     }
 
-    public Watch insert(int dutyId, long dayInSeconds, int beforeSeconds,
-            int afterSeconds) {
+    public Watch insert(int dutyId, long dayInSeconds, int durationSeconds,
+            int beforeSeconds, int afterSeconds) {
         ContentValues values = new ContentValues();
         values.put("dutyid", dutyId);
         values.put("day", dayInSeconds);
+        values.put("duration", durationSeconds);
         values.put("before", beforeSeconds);
         values.put("after", afterSeconds);
 
         int id = this.mDb.insert(this, values);
-        return new Watch(id, dutyId, dayInSeconds, beforeSeconds, afterSeconds);
+        return new Watch(id, dutyId, dayInSeconds, durationSeconds,
+                beforeSeconds, afterSeconds, 0, 0);
     }
 
     public void update(Watch watch) {
         ContentValues values = new ContentValues();
         values.put("dutyid", watch.getDutyId());
         values.put("day", watch.getDayInSeconds());
+        values.put("duration", watch.getDutyDurationSeconds());
         values.put("before", watch.getBeforeSeconds());
         values.put("after", watch.getAfterSeconds());
+        values.put("alarmStopped", watch.getAlarmStopped());
+        values.put("alarmPaused", watch.getAlarmPausedInSeconds());
 
         String where = "_id=?";
         String[] whereArgs = new String[] { String.valueOf(watch.getId()) };
@@ -107,8 +120,11 @@ public class WatchTable extends DBHelper.ITableBase {
             values.put("_id", watch.getId());
             values.put("dutyid", watch.getDutyId());
             values.put("day", watch.getDayInSeconds());
+            values.put("duration", watch.getDutyDurationSeconds());
             values.put("before", watch.getBeforeSeconds());
             values.put("after", watch.getAfterSeconds());
+            values.put("alarmStopped", watch.getAlarmStopped());
+            values.put("alarmPaused", watch.getAlarmPausedInSeconds());
 
             watchValues.add(values);
         }
@@ -120,6 +136,37 @@ public class WatchTable extends DBHelper.ITableBase {
         // list from newly version to oldest version
         if (oldVersion >= 0x70000000) {
             return null;
+        } else if (oldVersion >= 4) {
+            String[] fields = new String[] { "_id", // integer primary key
+                    "dutyid", // integer
+                    "day", // bigint
+                    "duration", // integer
+                    "before", // integer
+                    "after", // integer
+                    "alarmStopped", // integer
+                    "alarmPaused", // bigint
+            };
+
+            DBHelper.IDbObjectCreator<Watch> creator = new DBHelper.IDbObjectCreator<Watch>() {
+
+                @Override
+                public Watch create(Cursor cursor) {
+                    int id = cursor.getInt(0);
+                    int dutyId = cursor.getInt(1);
+                    long day = cursor.getLong(2);
+                    int duration = cursor.getInt(3);
+                    int before = cursor.getInt(4);
+                    int after = cursor.getInt(5);
+                    int alarmStopped = cursor.getInt(6);
+                    long alarmPaused = cursor.getLong(7);
+
+                    return new Watch(id, dutyId, day, duration, before, after,
+                            alarmStopped, alarmPaused);
+                }
+            };
+
+            return mDb.new UpgradeHelper<Watch>(getTableName(), fields, creator)
+                    .selectAll();
         } else if (oldVersion >= 2) {
             String[] fields = new String[] { "_id", // integer primary key
                     "dutyid", // integer
@@ -138,7 +185,7 @@ public class WatchTable extends DBHelper.ITableBase {
                     int before = cursor.getInt(3);
                     int after = cursor.getInt(4);
 
-                    return new Watch(id, dutyId, day, before, after);
+                    return new Watch(id, dutyId, day, 0, before, after, 0, 0);
                 }
             };
 
