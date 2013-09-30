@@ -16,10 +16,11 @@ public final class Util {
         return picker.getCurrentHour() * 3600 + picker.getCurrentMinute() * 60;
     }
 
-    public static void updateDate(DatePicker picker, long dayInSeconds) {
+    public static void updateDate(DatePicker picker, long dayInSeconds,
+            DatePicker.OnDateChangedListener changed) {
         Date date = secondsToDate(dayInSeconds);
         picker.init(date.getYear() + 1900, date.getMonth(), date.getDate(),
-                null);
+                changed);
     }
 
     public static long getDate(DatePicker picker) {

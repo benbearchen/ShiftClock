@@ -191,7 +191,17 @@ public class EditWatchActivity extends Activity {
 
         mComboDuty.setSelection(dutyId);
 
-        Util.updateDate(mWatchDay, mWatch.getDayInSeconds());
+        Util.updateDate(mWatchDay, mWatch.getDayInSeconds(),
+                new DatePicker.OnDateChangedListener() {
+
+                    @Override
+                    public void onDateChanged(DatePicker view, int year,
+                            int monthOfYear, int dayOfMonth) {
+                        updateRealBegin();
+                        updateRealEnd();
+                    }
+
+                });
         if (mWatch.getBeforeSeconds() > 0) {
             mToggleBefore.setChecked(false);
             Util.updateTime(mBeforeTime, mWatch.getBeforeSeconds());
