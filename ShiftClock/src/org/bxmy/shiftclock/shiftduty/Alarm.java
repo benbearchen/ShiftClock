@@ -102,6 +102,9 @@ public class Alarm {
 
         return this.getDate().equals(old.getDate())
                 && this.getBeginSeconds() == old.getBeginSeconds()
-                && this.getIntervalSeconds() == old.getIntervalSeconds();
+                && this.getIntervalSeconds() == old.getIntervalSeconds()
+                && this.watch != null && old.watch != null
+                && this.watch.getDutyId() == old.watch.getDutyId()
+                && this.watch.getAlarmStopped() == old.watch.getAlarmStopped();
     }
 }
