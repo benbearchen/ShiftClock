@@ -42,5 +42,7 @@
     <string name="label_nextWatch">下次值班：</string>
     <string name="label_buttonPauseAlarm">推迟闹铃</string>
     <string name="label_dutyTime">班种设定：</string>
+    <string name="label_watchRealBegin">实际上班：</string>
+    <string name="label_watchRealEnd">实际下班：</string>
 
 </resources>

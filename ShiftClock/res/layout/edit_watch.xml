@@ -79,6 +79,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_labelWatchBefore" />
 
+            <TextView
+                android:id="@+id/label_watchRealBegin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_watchRealBegin" />
+
             <ToggleButton
                 android:id="@+id/toggle_beforeWatch"
                 android:layout_width="wrap_content"
@@ -103,6 +109,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_labelWatchAfter" />
+
+            <TextView
+                android:id="@+id/label_watchRealEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_watchRealEnd" />
 
             <ToggleButton
                 android:id="@+id/toggle_afterWatch"

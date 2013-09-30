@@ -14,10 +14,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -31,9 +34,13 @@ public class EditWatchActivity extends Activity {
 
     private TextView mDutyTime;
 
+    private TextView mRealBegin;
+
     private ToggleButton mToggleBefore;
 
     private TimePicker mBeforeTime;
+
+    private TextView mRealEnd;
 
     private ToggleButton mToggleAfter;
 
@@ -92,6 +99,9 @@ public class EditWatchActivity extends Activity {
                     mBeforeTime.setEnabled(true);
                     mAfterTime.setEnabled(true);
                 }
+
+                updateRealBegin();
+                updateRealEnd();
             }
 
             @Override
@@ -100,19 +110,55 @@ public class EditWatchActivity extends Activity {
 
         });
 
+        mRealBegin = (TextView) findViewById(R.id.label_watchRealBegin);
         mToggleBefore = (ToggleButton) findViewById(R.id.toggle_beforeWatch);
         mToggleBefore.setTextOff("提前");
         mToggleBefore.setTextOn("推迟");
+        mToggleBefore.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                    boolean isChecked) {
+                updateRealBegin();
+            }
+
+        });
 
         mBeforeTime = (TimePicker) findViewById(R.id.time_beforeWatch);
         mBeforeTime.setIs24HourView(true);
+        mBeforeTime.setOnTimeChangedListener(new OnTimeChangedListener() {
 
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                updateRealBegin();
+            }
+
+        });
+
+        mRealEnd = (TextView) findViewById(R.id.label_watchRealEnd);
         mToggleAfter = (ToggleButton) findViewById(R.id.toggle_afterWatch);
         mToggleAfter.setTextOff("提前");
         mToggleAfter.setTextOn("推迟");
+        mToggleAfter.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                    boolean isChecked) {
+                updateRealEnd();
+            }
+
+        });
 
         mAfterTime = (TimePicker) findViewById(R.id.time_afterWatch);
         mAfterTime.setIs24HourView(true);
+        mAfterTime.setOnTimeChangedListener(new OnTimeChangedListener() {
+
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                updateRealEnd();
+            }
+
+        });
 
         Button ok = (Button) findViewById(R.id.button_ok);
         ok.setOnClickListener(new OnClickListener() {
@@ -223,5 +269,62 @@ public class EditWatchActivity extends Activity {
 
     private void onCancel() {
         finish();
+    }
+
+    void updateRealBegin() {
+        if (mWatch == null) {
+            mRealEnd.setText("");
+            return;
+        }
+
+        int before = Util.getTime(mBeforeTime);
+        if (mToggleBefore.isChecked())
+            before = -before;
+
+        int dutyId = mComboDuty.getSelectedItemPosition();
+        Duty duty = null;
+        if (dutyId > 0) {
+            duty = ShiftDuty.getInstance().getDutyById(dutyId);
+        }
+
+        if (duty != null) {
+            long dayInSeconds = Util.getDate(mWatchDay)
+                    + duty.getStartSecondsInDay();
+
+            mRealBegin.setText(R.string.label_watchRealBegin);
+            String begin = Util.formatTimeByRelatived(dayInSeconds, -before);
+            mRealBegin.append(begin);
+        } else {
+            mRealBegin.setText("");
+        }
+    }
+
+    void updateRealEnd() {
+        if (mWatch == null) {
+            mRealEnd.setText("");
+            return;
+        }
+
+        int after = Util.getTime(mAfterTime);
+        if (!mToggleAfter.isChecked())
+            after = -after;
+
+        int dutyId = mComboDuty.getSelectedItemPosition();
+        Duty duty = null;
+        if (dutyId > 0) {
+            duty = ShiftDuty.getInstance().getDutyById(dutyId);
+        }
+
+        if (duty != null) {
+            long dayInSeconds = Util.getDate(mWatchDay)
+                    + duty.getStartSecondsInDay();
+
+            mRealEnd.setText(R.string.label_watchRealEnd);
+            String end = Util.formatTimeByRelatived(dayInSeconds,
+                    duty.getDurationSeconds() + after);
+            mRealEnd.append(end);
+        } else {
+            mRealEnd.setText("");
+        }
     }
 }
