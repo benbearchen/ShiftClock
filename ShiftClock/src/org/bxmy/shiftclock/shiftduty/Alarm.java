@@ -2,16 +2,22 @@ package org.bxmy.shiftclock.shiftduty;
 
 import org.bxmy.shiftclock.Util;
 
+import android.text.TextUtils;
+
 public class Alarm {
 
     private Watch watch;
+
+    private String dutyName;
 
     private int alarmBeforeSeconds;
 
     private int intervalSeconds;
 
-    public Alarm(Watch watch, int alarmBeforeSeconds, int intervalSeconds) {
+    public Alarm(Watch watch, String dutyName, int alarmBeforeSeconds,
+            int intervalSeconds) {
         this.watch = watch;
+        this.dutyName = dutyName;
         this.alarmBeforeSeconds = alarmBeforeSeconds;
         this.intervalSeconds = intervalSeconds;
     }
@@ -92,8 +98,14 @@ public class Alarm {
     }
 
     public String getWatchTime() {
+        String duty = "";
+        if (!TextUtils.isEmpty(dutyName)) {
+            duty = " (班种：" + dutyName + ")";
+        }
+
         return Util.formatDateTimeToNow(getBeginSeconds()) + " 至 "
-                + Util.formatTimeByOther(getBeginSeconds(), getEndSeconds());
+                + Util.formatTimeByOther(getBeginSeconds(), getEndSeconds())
+                + duty;
     }
 
     public boolean isSame(Alarm old) {

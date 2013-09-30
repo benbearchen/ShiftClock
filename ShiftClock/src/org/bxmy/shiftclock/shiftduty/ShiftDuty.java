@@ -211,12 +211,13 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         if (nextWatch != null) {
             Duty duty = getDutyById(nextWatch.getDutyId());
             int alarmBefore = getDefaultAlarmBeforeSeconds();
+            String dutyName = duty != null ? duty.getName() : "";
             if (duty != null && duty.getAlarmBeforeSeconds() > 0) {
                 alarmBefore = duty.getAlarmBeforeSeconds();
             }
 
             int interval = getDefaultAlarmIntervalSeconds();
-            return new Alarm(nextWatch, alarmBefore, interval);
+            return new Alarm(nextWatch, dutyName, alarmBefore, interval);
         }
 
         return null;
