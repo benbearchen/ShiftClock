@@ -90,6 +90,8 @@ public class WatchTable extends DBHelper.ITableBase {
         values.put("duration", durationSeconds);
         values.put("before", beforeSeconds);
         values.put("after", afterSeconds);
+        values.put("alarmStopped", 0);
+        values.put("alarmPaused", 0);
 
         int id = this.mDb.insert(this, values);
         return new Watch(id, dutyId, dayInSeconds, durationSeconds,
