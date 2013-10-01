@@ -170,8 +170,11 @@ public class ShiftClockActivity extends Activity {
         super.onResume();
 
         Alarm nextAlarm = ShiftDuty.getInstance().getNextAlarmTime();
-        if (nextAlarm == null || nextAlarm.isSame(mCurrentAlarm))
+        if (nextAlarm != null && nextAlarm.isSame(mCurrentAlarm)) {
+            mCurrentAlarm = nextAlarm;
+            setNextWatch(mCurrentAlarm.getWatchTime());
             return;
+        }
 
         mCurrentAlarm = nextAlarm;
         if (mCurrentAlarm != null) {
@@ -225,7 +228,7 @@ public class ShiftClockActivity extends Activity {
             String t = Util.formatTimeToNow(timeInSeconds);
             label.append(t);
         } else {
-            label.append("禁用");
+            label.append("无");
         }
     }
 
