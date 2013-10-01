@@ -235,7 +235,7 @@ public class ShiftClockActivity extends Activity {
     private void setAlarmTime(Context context, long timeInSeconds,
             long intervalSeconds) {
         Log.i("shiftclock", "set alarm " + this);
-        cancelAlarmTime();
+        cancelAlarmTime(this);
 
         AlarmManager am = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
@@ -258,11 +258,11 @@ public class ShiftClockActivity extends Activity {
     }
 
     private void cancelAlarmTime() {
+        Log.i("shiftclock", "cancel alarm");
         cancelAlarmTime(this);
     }
 
     private void cancelAlarmTime(Context context) {
-        Log.i("shiftclock", "cancel alarm");
         if (this.mAlarmSender == null)
             return;
 
@@ -277,12 +277,16 @@ public class ShiftClockActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             if (ACTION_ALARM.equals(intent.getAction())) {
                 Log.i("shiftclock", "alarm");
-                Intent alarmIntent = new Intent();
-                alarmIntent.setClass(context, ShiftClockActivity.class);
-                alarmIntent.putExtra("alarmTime", Util.now());
-                alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                if (mMediaPlayer == null || !mMediaPlayer.isPlaying()) {
+                    Intent alarmIntent = new Intent();
+                    alarmIntent.setClass(context, ShiftClockActivity.class);
+                    alarmIntent.putExtra("alarmTime", Util.now());
+                    alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                context.startActivity(alarmIntent);
+                    context.startActivity(alarmIntent);
+                } else {
+                    Log.i("shiftclock", "alarm while playing");
+                }
             }
         }
     }
