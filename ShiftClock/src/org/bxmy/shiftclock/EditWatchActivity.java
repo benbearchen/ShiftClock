@@ -80,7 +80,9 @@ public class EditWatchActivity extends Activity {
                     int arg2, long arg3) {
                 if (arg2 == 0) {
                     mDutyTime.setText("");
+                    mToggleBefore.setEnabled(false);
                     mBeforeTime.setEnabled(false);
+                    mToggleAfter.setEnabled(false);
                     mAfterTime.setEnabled(false);
                 } else {
                     Duty duty = ShiftDuty.getInstance().getDutyById(arg2);
@@ -96,7 +98,9 @@ public class EditWatchActivity extends Activity {
                         mDutyTime.setText("");
                     }
 
+                    mToggleBefore.setEnabled(true);
                     mBeforeTime.setEnabled(true);
+                    mToggleAfter.setEnabled(true);
                     mAfterTime.setEnabled(true);
                 }
 
