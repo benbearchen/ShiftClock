@@ -281,6 +281,30 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         }
     }
 
+    /**
+     * 获取将来（如明天）需要设置的日期。将来已经设置，则返回 -1
+     * 
+     * @return
+     */
+    public int getFutureDayNeedToSet() {
+        long now = Util.now();
+        Date tomorrow = Util.secondsToDate(now + 86400);
+        for (Watch w : mWatches) {
+            if (w.getDayInSeconds() < now)
+                continue;
+
+            if (Util.isSameDay(tomorrow,
+                    Util.secondsToDate(w.getDayInSeconds())))
+                return -1;
+        }
+
+        return Util.getDayIdOfTime(Util.dateToSeconds(tomorrow));
+    }
+
+    public int getWatchHintSecondsInDay() {
+        return 20 * 3600; // 晚 8 点
+    }
+
     private void initDb(Context context) {
         mDutyTable = new DutyTable();
         DBHelper.addTable(mDutyTable);

@@ -2,6 +2,7 @@ package org.bxmy.shiftclock;
 
 import java.io.IOException;
 
+import org.bxmy.shiftclock.notification.NotificationHelper;
 import org.bxmy.shiftclock.shiftduty.Alarm;
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
 
@@ -26,6 +27,8 @@ import android.widget.TextView;
 public class ShiftClockActivity extends Activity {
 
     private Alarm mCurrentAlarm;
+
+    private int mHintDayId = -1;
 
     /** Called when the activity is first created. */
     @Override
@@ -53,6 +56,21 @@ public class ShiftClockActivity extends Activity {
         registerReceiver(this.mShutdownReceiver, filter);
 
         checkAlarm(getIntent());
+
+        int dayId = ShiftDuty.getInstance().getFutureDayNeedToSet();
+        if (dayId >= 0) {
+            mHintDayId = dayId;
+
+            String date = Util.formatDateByDayId(dayId);
+            String title = "设置 " + date + " 值班";
+            NotificationHelper.getInstance(this).showHint(
+                    dayId,
+                    title,
+                    "还没有设置 " + date + " 的值班或休息",
+                    this,
+                    new Intent(this, EditWatchActivity.class).putExtra("day",
+                            dayId));
+        }
     }
 
     private void binds() {
@@ -204,6 +222,9 @@ public class ShiftClockActivity extends Activity {
         shutdown(false);
 
         stopAlarmRing();
+        if (mHintDayId >= 0)
+            NotificationHelper.getInstance(this).cancelHint(mHintDayId);
+
         ShiftDuty.getInstance().close();
 
         super.onDestroy();

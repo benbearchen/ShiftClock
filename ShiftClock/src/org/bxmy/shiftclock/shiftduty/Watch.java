@@ -61,6 +61,10 @@ public class Watch implements Parcelable {
         return new Watch(-1, -1, Util.dateToSeconds(date), 0, 0, 0, 0, 0);
     }
 
+    public static Watch createEmptyByDayId(int dayId) {
+        return new Watch(-1, -1, Util.getTimeOfDayId(dayId), 0, 0, 0, 0, 0);
+    }
+
     public Watch(int id) {
         this.mId = id;
     }

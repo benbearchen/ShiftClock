@@ -2,6 +2,7 @@ package org.bxmy.shiftclock;
 
 import java.util.Date;
 
+import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
@@ -44,6 +45,25 @@ public final class Util {
     public static long getDateInSeconds(Date date) {
         return dateToSeconds(new Date(date.getYear(), date.getMonth(),
                 date.getDate()));
+    }
+
+    public static int getDayIdOfTime(long timeInSeconds) {
+        Date time = secondsToDate(timeInSeconds);
+        long utcDate = Date.UTC(time.getYear(), time.getMonth(),
+                time.getDate(), 0, 0, 0);
+        utcDate = dateToSeconds(new Date(utcDate));
+
+        int dayId = (int) (utcDate / 86400);
+        Date check = secondsToDate(getTimeOfDayId(dayId));
+        if (check.getDate() != time.getDate())
+            Log.e("shiftclock",
+                    time.toString() + "   got day id  " + check.toString());
+
+        return dayId;
+    }
+
+    public static long getTimeOfDayId(int dayId) {
+        return dayId * 86400L + new Date().getTimezoneOffset() * 60;
     }
 
     public static String formatTimeIn24Hours(long seconds) {
@@ -142,4 +162,7 @@ public final class Util {
             return formatYear2Minute(t);
     }
 
+    public static String formatDateByDayId(int dayId) {
+        return formatYear2Date(secondsToDate(getTimeOfDayId(dayId)));
+    }
 }

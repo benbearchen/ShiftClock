@@ -55,6 +55,15 @@ public class EditWatchActivity extends Activity {
         bind();
 
         mWatch = getIntent().getParcelableExtra("watch");
+        if (mWatch == null) {
+            if (getIntent().hasExtra("day")) {
+                int day = getIntent().getIntExtra("day", 0);
+                if (day > 0) {
+                    mWatch = Watch.createEmptyByDayId(day);
+                }
+            }
+        }
+
         initWatch();
     }
 
