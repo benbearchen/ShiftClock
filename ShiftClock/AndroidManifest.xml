@@ -47,6 +47,7 @@
         <activity android:name="WatchActivity" android:label="@string/label_setWatch"></activity>
         <activity android:name="EditDutyActivity" android:label="@string/label_titleEditDuty"></activity>
         <activity android:name="EditWatchActivity" android:label="@string/label_titleEditWatch"></activity>
+        <activity android:name="WatchHistoryListActivity" android:label="@string/label_watchHistory"></activity>
     </application>
 
 </manifest>

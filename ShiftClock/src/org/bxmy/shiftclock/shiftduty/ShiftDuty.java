@@ -168,6 +168,24 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         return watches;
     }
 
+    public Watch[] getWatchHistories() {
+        long today = Util.getDateInSeconds(new Date());
+        ArrayList<Watch> sorted = new ArrayList<Watch>();
+        if (!mWatches.isEmpty()) {
+            for (Watch w : mWatches) {
+                if (w.getDayInSeconds() < today)
+                    sorted.add(w);
+            }
+        }
+
+        if (!sorted.isEmpty()) {
+            Collections.sort(sorted, Watch.createCompareByDate());
+            Collections.reverse(sorted);
+        }
+
+        return sorted.toArray(new Watch[0]);
+    }
+
     public boolean watchExistsDay(long dayInSeconds) {
         Date day = Util.secondsToDate(dayInSeconds);
         for (Watch w : mWatches) {

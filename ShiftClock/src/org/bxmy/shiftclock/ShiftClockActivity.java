@@ -117,6 +117,18 @@ public class ShiftClockActivity extends Activity {
             }
         });
 
+        Button watchHistory = (Button) findViewById(R.id.button_watchHistory);
+        watchHistory.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent();
+                intent.setClass(ShiftClockActivity.this,
+                        WatchHistoryListActivity.class);
+
+                startActivity(intent);
+            }
+        });
+
         Button about = (Button) findViewById(R.id.button_about);
         about.setOnClickListener(new Button.OnClickListener() {
             @Override
