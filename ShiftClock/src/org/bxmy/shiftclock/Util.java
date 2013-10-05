@@ -104,6 +104,10 @@ public final class Util {
         return time.getTime() / 1000;
     }
 
+    public static boolean isSameDay(long first, long second) {
+        return isSameDay(secondsToDate(first), secondsToDate(second));
+    }
+
     public static boolean isSameDay(Date first, Date second) {
         return first.getYear() == second.getYear()
                 && first.getMonth() == second.getMonth()

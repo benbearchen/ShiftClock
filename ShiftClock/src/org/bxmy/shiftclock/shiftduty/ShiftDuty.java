@@ -168,6 +168,30 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         return watches;
     }
 
+    public String getCurrentWatchInfo() {
+        long now = Util.now();
+        for (Watch w : mWatches) {
+            if (w.isInWatch(now)) {
+                if (w.getDutyId() <= 0) {
+                    return "休息 "
+                            + Util.formatYear2Date(Util.secondsToDate(w
+                                    .getDayInSeconds()));
+                } else {
+                    String dutyName = getDutyName(w.getDutyId());
+                    String watchTime = Util.formatDateTimeToNow(w
+                            .getRealWatchBeginSeconds())
+                            + " 至 "
+                            + Util.formatTimeByOther(
+                                    w.getRealWatchBeginSeconds(),
+                                    w.getRealWatchEndSeconds());
+                    return dutyName + " " + watchTime;
+                }
+            }
+        }
+
+        return "";
+    }
+
     public Watch[] getWatchHistories() {
         long today = Util.getDateInSeconds(new Date());
         ArrayList<Watch> sorted = new ArrayList<Watch>();

@@ -185,6 +185,7 @@ public class ShiftClockActivity extends Activity {
         super.onResume();
 
         checkFutureDayHint();
+        updateCurrentWatch();
 
         Alarm nextAlarm = ShiftDuty.getInstance().getNextAlarmTime();
         if (nextAlarm != null && nextAlarm.isSame(mCurrentAlarm)) {
@@ -317,6 +318,18 @@ public class ShiftClockActivity extends Activity {
                 "day", dayId);
         NotificationHelper.getInstance(this).showHint(dayId, title,
                 "还没有设置 " + date + " 的值班或休息", this, intent);
+    }
+
+    private void updateCurrentWatch() {
+        TextView currentWatch = (TextView) findViewById(R.id.label_currentWatch);
+        String watchInfo = ShiftDuty.getInstance().getCurrentWatchInfo();
+
+        if (TextUtils.isEmpty(watchInfo)) {
+            currentWatch.setText("");
+        } else {
+            currentWatch.setText(R.string.label_currentWatch);
+            currentWatch.append(watchInfo);
+        }
     }
 
     public static class AlarmReceiver extends BroadcastReceiver {

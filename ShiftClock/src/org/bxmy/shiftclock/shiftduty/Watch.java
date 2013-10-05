@@ -149,6 +149,23 @@ public class Watch implements Parcelable {
         return this.mDayInSeconds - this.mBeforeSeconds;
     }
 
+    public long getRealWatchEndSeconds() {
+        if (this.mDutyId <= 0)
+            return 0;
+
+        return this.mDayInSeconds + this.mDutyDurationSeconds
+                + this.mAfterSeconds;
+    }
+
+    public boolean isInWatch(long time) {
+        if (this.mDutyId <= 0) {
+            return Util.isSameDay(getDayInSeconds(), time);
+        } else {
+            return time >= getRealWatchBeginSeconds()
+                    && time < getRealWatchEndSeconds();
+        }
+    }
+
     public static Comparator<Watch> createCompareByDate() {
         return new Comparator<Watch>() {
 
