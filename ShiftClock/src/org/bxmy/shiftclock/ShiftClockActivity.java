@@ -56,21 +56,6 @@ public class ShiftClockActivity extends Activity {
         registerReceiver(this.mShutdownReceiver, filter);
 
         checkAlarm(getIntent());
-
-        int dayId = ShiftDuty.getInstance().getFutureDayNeedToSet();
-        if (dayId >= 0) {
-            mHintDayId = dayId;
-
-            String date = Util.formatDateByDayId(dayId);
-            String title = "设置 " + date + " 值班";
-            NotificationHelper.getInstance(this).showHint(
-                    dayId,
-                    title,
-                    "还没有设置 " + date + " 的值班或休息",
-                    this,
-                    new Intent(this, EditWatchActivity.class).putExtra("day",
-                            dayId));
-        }
     }
 
     private void binds() {
@@ -199,6 +184,8 @@ public class ShiftClockActivity extends Activity {
         Log.d("shiftclock", "onResume");
         super.onResume();
 
+        checkFutureDayHint();
+
         Alarm nextAlarm = ShiftDuty.getInstance().getNextAlarmTime();
         if (nextAlarm != null && nextAlarm.isSame(mCurrentAlarm)) {
             mCurrentAlarm = nextAlarm;
@@ -304,6 +291,32 @@ public class ShiftClockActivity extends Activity {
         am.cancel(this.mAlarmSender);
         this.mAlarmSender = null;
         setAlarmTime(0);
+    }
+
+    private void checkFutureDayHint() {
+        int dayId = ShiftDuty.getInstance().getFutureDayNeedToSet();
+        if (mHintDayId != -1 && mHintDayId != dayId) {
+            NotificationHelper.getInstance(this).cancelHint(mHintDayId);
+            mHintDayId = -1;
+        }
+
+        if (dayId < 0)
+            return;
+
+        long hintTime = Util.getTimeOfDayId(dayId - 1)
+                + ShiftDuty.getInstance().getWatchHintSecondsInDay();
+        long now = Util.now();
+        if (now < hintTime)
+            return;
+
+        mHintDayId = dayId;
+
+        String date = Util.formatDateByDayId(dayId);
+        String title = "设置 " + date + " 值班";
+        Intent intent = new Intent(this, EditWatchActivity.class).putExtra(
+                "day", dayId);
+        NotificationHelper.getInstance(this).showHint(dayId, title,
+                "还没有设置 " + date + " 的值班或休息", this, intent);
     }
 
     public static class AlarmReceiver extends BroadcastReceiver {
