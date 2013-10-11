@@ -39,11 +39,12 @@ public class ShiftClockActivity extends Activity {
         ShiftDuty.getInstance().init(this);
 
         binds();
+        initAlarm(this);
 
         // 启动分两种情况：闹铃启动和桌面启动
         mCurrentAlarm = ShiftDuty.getInstance().getNextAlarmTime();
         if (mCurrentAlarm != null) {
-            setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
+            startAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
             setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
@@ -196,7 +197,7 @@ public class ShiftClockActivity extends Activity {
 
         mCurrentAlarm = nextAlarm;
         if (mCurrentAlarm != null) {
-            setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
+            startAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
             setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
@@ -233,13 +234,20 @@ public class ShiftClockActivity extends Activity {
 
     private void updateCurrentAlarm() {
         if (mCurrentAlarm != null) {
-            setAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
+            startAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
             setAlarmTime(mCurrentAlarm.getNextAlarmSeconds());
         } else {
             cancelAlarmTime();
             setAlarmTime(0);
         }
+    }
+
+    private void initAlarm(Context context) {
+        Intent intent = new Intent(ACTION_ALARM);
+        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+        this.mAlarmSender = sender;
     }
 
     private void setAlarmTime(long timeInSeconds) {
@@ -253,19 +261,16 @@ public class ShiftClockActivity extends Activity {
         }
     }
 
-    private void setAlarmTime(Context context, long timeInSeconds,
+    private void startAlarmTime(Context context, long timeInSeconds,
             long intervalSeconds) {
         Log.i("shiftclock", "set alarm " + this);
         cancelAlarmTime(this);
 
+        initAlarm(context);
         AlarmManager am = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(ACTION_ALARM);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
         am.setRepeating(AlarmManager.RTC_WAKEUP, timeInSeconds * 1000,
-                intervalSeconds * 1000, sender);
-        this.mAlarmSender = sender;
+                intervalSeconds * 1000, this.mAlarmSender);
         setAlarmTime(timeInSeconds);
     }
 
