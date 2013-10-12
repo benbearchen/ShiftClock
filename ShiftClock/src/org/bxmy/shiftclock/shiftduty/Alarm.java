@@ -53,6 +53,10 @@ public class Alarm {
         }
     }
 
+    public boolean isDisabled() {
+        return watch.getAlarmStopped() != 0;
+    }
+
     public void pause() {
         if (watch.getAlarmStopped() == 0) {
             watch.setAlarmPasuedInSeconds(Util.now());

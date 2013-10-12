@@ -233,13 +233,15 @@ public class ShiftClockActivity extends Activity {
     }
 
     private void updateCurrentAlarm() {
-        if (mCurrentAlarm != null) {
+        if (mCurrentAlarm != null && !mCurrentAlarm.isDisabled()) {
             startAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
                     mCurrentAlarm.getIntervalSeconds());
             setAlarmTime(mCurrentAlarm.getNextAlarmSeconds());
+            setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
             cancelAlarmTime();
             setAlarmTime(0);
+            setNextWatch("");
         }
     }
 
