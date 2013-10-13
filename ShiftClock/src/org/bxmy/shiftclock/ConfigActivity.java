@@ -16,6 +16,8 @@ public class ConfigActivity extends Activity {
 
     private TimePicker mTimeDefaultAlarmInterval;
 
+    private TimePicker mTimeFutureWatchHint;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,9 @@ public class ConfigActivity extends Activity {
 
         mTimeDefaultAlarmInterval = (TimePicker) findViewById(R.id.time_defaultAlarmInterval);
         mTimeDefaultAlarmInterval.setIs24HourView(true);
+
+        mTimeFutureWatchHint = (TimePicker) findViewById(R.id.time_futureWatchHint);
+        mTimeFutureWatchHint.setIs24HourView(true);
 
         Button ok = (Button) findViewById(R.id.button_ok);
         ok.setOnClickListener(new OnClickListener() {
@@ -58,6 +63,9 @@ public class ConfigActivity extends Activity {
 
         int interval = ShiftDuty.getInstance().getDefaultAlarmIntervalSeconds();
         Util.updateTime(mTimeDefaultAlarmInterval, interval);
+
+        int watchHint = ShiftDuty.getInstance().getWatchHintSecondsInDay();
+        Util.updateTime(mTimeFutureWatchHint, watchHint);
     }
 
     private void onOK() {
@@ -71,6 +79,9 @@ public class ConfigActivity extends Activity {
 
         ShiftDuty.getInstance().setDefaultAlarmBeforeSeconds(beforeSeconds);
         ShiftDuty.getInstance().setDefaultAlarmIntervalSeconds(intervalSeconds);
+
+        int watchHint = Util.getTime(mTimeFutureWatchHint);
+        ShiftDuty.getInstance().setWatchHintSecondsInDay(watchHint);
 
         finish();
     }

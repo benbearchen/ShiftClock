@@ -47,5 +47,6 @@
     <string name="label_watchHistory">查看值班历史</string>
     <string name="label_currentWatch">当前值班：</string>
     <string name="label_delete">删除</string>
+    <string name="label_setFutureWatchHint">次日值班设置提醒时间</string>
 
 </resources>

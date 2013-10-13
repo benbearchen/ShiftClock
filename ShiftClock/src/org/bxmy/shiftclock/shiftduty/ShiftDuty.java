@@ -338,7 +338,20 @@ public class ShiftDuty implements DBHelper.IDBEvent {
     }
 
     public int getWatchHintSecondsInDay() {
-        return 20 * 3600; // 晚 8 点
+        int defaultHintSeconds = 20 * 3600; // 晚 8 点
+        if (mConfigTable != null) {
+            return mConfigTable.getIntByName("futureWatchHint",
+                    defaultHintSeconds);
+        }
+
+        return defaultHintSeconds;
+    }
+
+    public void setWatchHintSecondsInDay(int hintSecondsInDay) {
+        if (hintSecondsInDay > 0 && mConfigTable != null) {
+            mConfigTable.setByName("futureWatchHint",
+                    String.valueOf(hintSecondsInDay));
+        }
     }
 
     private void initDb(Context context) {

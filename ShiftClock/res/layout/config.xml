@@ -30,28 +30,42 @@
         android:layout_below="@+id/button_ok"
         android:layout_marginTop="17dp"
         android:text="@string/label_defaultAlarmBefore" />
-
+
     <TimePicker
         android:id="@+id/time_defaultAlarmBefore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/textView1"
         android:layout_toRightOf="@+id/textView1" />
-
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView1"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/time_defaultAlarmBefore"
         android:text="@string/label_defaultAlarmInterval" />
-
+
     <TimePicker
         android:id="@+id/time_defaultAlarmInterval"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/textView2"
         android:layout_toRightOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_below="@+id/time_defaultAlarmInterval"
+        android:text="@string/label_setFutureWatchHint" />
+
+    <TimePicker
+        android:id="@+id/time_futureWatchHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textView3"
+        android:layout_toRightOf="@+id/textView3" />
 
 </RelativeLayout>
