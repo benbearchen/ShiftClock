@@ -211,8 +211,10 @@ public class ShiftClockActivity extends Activity {
         shutdown(false);
 
         stopAlarmRing();
-        if (mHintDayId >= 0)
-            NotificationHelper.getInstance(this).cancelHint(mHintDayId);
+        if (mHintDayId >= 0) {
+            NotificationHelper.getInstance(this.getApplicationContext())
+                    .cancelHint(mHintDayId);
+        }
 
         ShiftDuty.getInstance().close();
 
@@ -304,7 +306,8 @@ public class ShiftClockActivity extends Activity {
     private void checkFutureDayHint() {
         int dayId = ShiftDuty.getInstance().getFutureDayNeedToSet();
         if (mHintDayId != -1 && mHintDayId != dayId) {
-            NotificationHelper.getInstance(this).cancelHint(mHintDayId);
+            NotificationHelper.getInstance(this.getApplicationContext())
+                    .cancelHint(mHintDayId);
             mHintDayId = -1;
         }
 
