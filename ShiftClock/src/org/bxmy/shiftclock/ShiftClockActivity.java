@@ -2,7 +2,7 @@ package org.bxmy.shiftclock;
 
 import java.io.IOException;
 
-import org.bxmy.shiftclock.notification.NotificationHelper;
+import org.bxmy.shiftclock.notification.NotificationFutureWatch;
 import org.bxmy.shiftclock.shiftduty.Alarm;
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
 
@@ -27,8 +27,6 @@ import android.widget.TextView;
 public class ShiftClockActivity extends Activity {
 
     private Alarm mCurrentAlarm;
-
-    private int mHintDayId = -1;
 
     /** Called when the activity is first created. */
     @Override
@@ -211,10 +209,7 @@ public class ShiftClockActivity extends Activity {
         shutdown(false);
 
         stopAlarmRing();
-        if (mHintDayId >= 0) {
-            NotificationHelper.getInstance(this.getApplicationContext())
-                    .cancelHint(mHintDayId);
-        }
+        NotificationFutureWatch.getInstance().cancel();
 
         ShiftDuty.getInstance().close();
 
@@ -305,29 +300,22 @@ public class ShiftClockActivity extends Activity {
 
     private void checkFutureDayHint() {
         int dayId = ShiftDuty.getInstance().getFutureDayNeedToSet();
-        if (mHintDayId != -1 && mHintDayId != dayId) {
-            NotificationHelper.getInstance(this.getApplicationContext())
-                    .cancelHint(mHintDayId);
-            mHintDayId = -1;
-        }
-
-        if (dayId < 0)
+        if (dayId < 0) {
+            NotificationFutureWatch.getInstance().cancel();
             return;
+        }
 
         long hintTime = Util.getTimeOfDayId(dayId - 1)
                 + ShiftDuty.getInstance().getWatchHintSecondsInDay();
         long now = Util.now();
-        if (now < hintTime)
+        if (now < hintTime) {
+            NotificationFutureWatch.getInstance().cancel();
             return;
+        }
 
-        mHintDayId = dayId;
-
-        String date = Util.formatDateByDayId(dayId);
-        String title = "设置 " + date + " 值班";
         Intent intent = new Intent(this, EditWatchActivity.class).putExtra(
                 "day", dayId);
-        NotificationHelper.getInstance(this).showHint(dayId, title,
-                "还没有设置 " + date + " 的值班或休息", this, intent);
+        NotificationFutureWatch.getInstance().show(dayId, intent);
     }
 
     private void updateCurrentWatch() {

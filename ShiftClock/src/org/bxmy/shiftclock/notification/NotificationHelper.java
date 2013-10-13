@@ -14,26 +14,30 @@ public class NotificationHelper {
 
     private NotificationManager mManager;
 
-    public static synchronized NotificationHelper getInstance(Context context) {
+    private Context mContext;
+
+    public static synchronized void createInstance(Context context) {
         if (sSelf == null) {
             sSelf = new NotificationHelper(context);
         }
+    }
 
+    public static synchronized NotificationHelper getInstance() {
         return sSelf;
     }
 
     private NotificationHelper(Context context) {
+        mContext = context;
         mManager = (NotificationManager) context
                 .getSystemService(Activity.NOTIFICATION_SERVICE);
     }
 
-    public void showHint(int dayId, String title, String message,
-            Context context, Intent intent) {
-        PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+    public void showHint(int dayId, String title, String message, Intent intent) {
+        PendingIntent pi = PendingIntent.getActivity(mContext, 0, intent, 0);
         Notification notify = new Notification(
                 R.drawable.ic_notification_overlay, title,
                 System.currentTimeMillis());
-        notify.setLatestEventInfo(context, title, message, pi);
+        notify.setLatestEventInfo(mContext, title, message, pi);
         notify.number = 0;
         mManager.notify(dayId, notify);
     }
