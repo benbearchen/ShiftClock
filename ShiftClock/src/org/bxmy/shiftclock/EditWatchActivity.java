@@ -190,12 +190,28 @@ public class EditWatchActivity extends Activity {
                 onCancel();
             }
         });
+
+        Button delete = (Button) findViewById(R.id.button_delete);
+        delete.setEnabled(false);
+        delete.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                onDelete();
+            }
+
+        });
     }
 
     private void initWatch() {
         if (mWatch == null) {
             mWatchDay.setEnabled(true);
             mWatch = Watch.createEmptyInDays(0, 0);
+        }
+
+        if (mWatch.getDutyId() >= 0) {
+            Button delete = (Button) findViewById(R.id.button_delete);
+            delete.setEnabled(true);
         }
 
         int dutyId = mWatch.getDutyId();
@@ -292,6 +308,13 @@ public class EditWatchActivity extends Activity {
 
     private void onCancel() {
         finish();
+    }
+
+    private void onDelete() {
+        if (mWatch.getDutyId() >= 0) {
+            ShiftDuty.getInstance().removeWatch(mWatch.getId());
+            finish();
+        }
     }
 
     void updateRealBegin() {

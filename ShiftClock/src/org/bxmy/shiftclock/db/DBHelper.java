@@ -187,6 +187,10 @@ public class DBHelper extends SQLiteOpenHelper {
         return (int) this.mDb.replace(table.getTableName(), null, values);
     }
 
+    public int delete(ITableBase table, String where, String[] whereArgs) {
+        return this.mDb.delete(table.getTableName(), where, whereArgs);
+    }
+
     public void recreateTable(ITableBase table) {
         this.mDb.execSQL("drop table if exists " + table.getTableName());
         this.mDb.execSQL(table.getCreateSQL());

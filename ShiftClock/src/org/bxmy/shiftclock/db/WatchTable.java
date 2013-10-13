@@ -113,6 +113,12 @@ public class WatchTable extends DBHelper.ITableBase {
         this.mDb.update(this, values, where, whereArgs);
     }
 
+    public void delete(int watchId) {
+        String where = "_id=?";
+        String[] whereArgs = new String[] { String.valueOf(watchId) };
+        this.mDb.delete(this, where, whereArgs);
+    }
+
     private void rebuildTable(ArrayList<Watch> watches) {
         ArrayList<ContentValues> watchValues = new ArrayList<ContentValues>();
         for (int i = 0; i < watches.size(); ++i) {

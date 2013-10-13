@@ -140,6 +140,18 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         }
     }
 
+    public void removeWatch(int watchId) {
+        for (int i = 0; i < mWatches.size(); ++i) {
+            if (mWatches.get(i).getId() == watchId) {
+                mWatches.remove(i);
+                if (this.mDb != null && this.mWatchTable != null) {
+                    this.mWatchTable.delete(watchId);
+                }
+                break;
+            }
+        }
+    }
+
     public Watch[] getFutureWatches() {
         long today = Util.getDateInSeconds(new Date());
         long lastDay = 0;
