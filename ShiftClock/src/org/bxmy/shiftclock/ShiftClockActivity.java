@@ -1,7 +1,5 @@
 package org.bxmy.shiftclock;
 
-import java.io.IOException;
-
 import org.bxmy.shiftclock.notification.NotificationFutureWatch;
 import org.bxmy.shiftclock.shiftduty.Alarm;
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
@@ -13,10 +11,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -224,7 +218,7 @@ public class ShiftClockActivity extends Activity {
             long alarmTime = intent.getLongExtra("alarmTime", 0);
             if (mCurrentAlarm.isValidAlarm(alarmTime)) {
                 findViewById(R.id.button_pauseAlarm).setEnabled(true);
-                playAlarmRing(this);
+                playAlarmRing();
             }
         }
     }
@@ -334,7 +328,7 @@ public class ShiftClockActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             if (ACTION_ALARM.equals(intent.getAction())) {
                 Log.i("shiftclock", "alarm");
-                if (mMediaPlayer == null || !mMediaPlayer.isPlaying()) {
+                if (!isAlarmPlaying()) {
                     Intent alarmIntent = new Intent();
                     alarmIntent.setClass(context, ShiftClockActivity.class);
                     alarmIntent.putExtra("alarmTime", Util.now());
@@ -346,6 +340,18 @@ public class ShiftClockActivity extends Activity {
                 }
             }
         }
+    }
+
+    public void playAlarmRing() {
+        ShiftClockApp.getInstance().getAlarmPlayer().playAlarmRing();
+    }
+
+    public void stopAlarmRing() {
+        ShiftClockApp.getInstance().getAlarmPlayer().stopAlarmRing();
+    }
+
+    public static boolean isAlarmPlaying() {
+        return ShiftClockApp.getInstance().getAlarmPlayer().isPlaying();
     }
 
     public static class BootReceiver extends BroadcastReceiver {
@@ -376,37 +382,6 @@ public class ShiftClockActivity extends Activity {
         }
     }
 
-    private static void playAlarmRing(Context context) {
-        Log.d("shiftclock", "play alarm ring");
-        stopAlarmRing();
-
-        Uri uri = RingtoneManager
-                .getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        try {
-            mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setDataSource(context, uri);
-            final AudioManager audioManager = (AudioManager) context
-                    .getSystemService(Context.AUDIO_SERVICE);
-            if (audioManager.getStreamVolume(AudioManager.STREAM_ALARM) != 0) {
-                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-                mMediaPlayer.setLooping(true);
-                mMediaPlayer.prepare();
-            }
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mMediaPlayer.start();
-    }
-
-    private static void stopAlarmRing() {
-        Log.d("shiftclock", "stop alarm ring");
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-        }
-    }
-
     private static String ACTION_ALARM = "org.bxmy.shiftclock.action.alarm";
 
     private static String ACTION_SHUTDOWN = "org.bxmy.shiftclock.action.shutdown";
@@ -420,6 +395,4 @@ public class ShiftClockActivity extends Activity {
             shutdown(true);
         }
     };
-
-    private static MediaPlayer mMediaPlayer;
 }
