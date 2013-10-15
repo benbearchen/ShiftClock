@@ -2,6 +2,7 @@ package org.bxmy.shiftclock;
 
 import java.util.ArrayList;
 
+import org.bxmy.shiftclock.notification.NotificationFutureWatch;
 import org.bxmy.shiftclock.shiftduty.Duty;
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
 import org.bxmy.shiftclock.shiftduty.Watch;
@@ -302,6 +303,9 @@ public class EditWatchActivity extends Activity {
                     durationSeconds, beforeSeconds, afterSeconds, 0, 0);
             ShiftDuty.getInstance().updateWatch(newWatch);
         }
+
+        int finalDayId = Util.getDayIdOfTime(dayInSeconds);
+        NotificationFutureWatch.getInstance().cancel(finalDayId);
 
         finish();
     }

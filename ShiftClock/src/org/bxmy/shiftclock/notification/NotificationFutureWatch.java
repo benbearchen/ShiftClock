@@ -30,6 +30,11 @@ public class NotificationFutureWatch {
                 "还没有设置 " + date + " 的值班或休息", intent);
     }
 
+    public void cancel(int dayId) {
+        if (dayId >= 0 && mHintDayId == dayId)
+            cancel();
+    }
+
     public void cancel() {
         if (mHintDayId >= 0) {
             NotificationHelper.getInstance().cancelHint(mHintDayId);
