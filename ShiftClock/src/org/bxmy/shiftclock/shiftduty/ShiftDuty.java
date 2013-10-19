@@ -1,6 +1,7 @@
 package org.bxmy.shiftclock.shiftduty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
@@ -31,6 +32,8 @@ public class ShiftDuty implements DBHelper.IDBEvent {
 
     private boolean mLoaded;
 
+    private IShiftDutyEvent mEvent;
+
     public static synchronized ShiftDuty getInstance() {
         if (sShiftDuty == null) {
             sShiftDuty = new ShiftDuty();
@@ -42,8 +45,9 @@ public class ShiftDuty implements DBHelper.IDBEvent {
     private ShiftDuty() {
     }
 
-    public void init(Context context) {
+    public void init(Context context, IShiftDutyEvent event) {
         initDb(context);
+        mEvent = event;
 
         load();
     }
@@ -122,6 +126,10 @@ public class ShiftDuty implements DBHelper.IDBEvent {
             Watch watch = mWatchTable.insert(dutyId, dayInSeconds,
                     durationSeconds, beforeSeconds, afterSeconds);
             mWatches.add(watch);
+
+            updateTimerNextWatch();
+            updateTimerFutureWatchHint();
+
             return watch;
         }
 
@@ -136,6 +144,10 @@ public class ShiftDuty implements DBHelper.IDBEvent {
                 if (this.mDb != null && this.mWatchTable != null) {
                     this.mWatchTable.update(watch);
                 }
+
+                updateTimerNextWatch();
+                updateTimerFutureWatchHint();
+                break;
             }
         }
     }
@@ -147,6 +159,9 @@ public class ShiftDuty implements DBHelper.IDBEvent {
                 if (this.mDb != null && this.mWatchTable != null) {
                     this.mWatchTable.delete(watchId);
                 }
+
+                updateTimerNextWatch();
+                updateTimerFutureWatchHint();
                 break;
             }
         }
@@ -294,6 +309,7 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         if (alarmBeforeSeconds > 0 && mConfigTable != null) {
             mConfigTable.setByName("alarmBefore",
                     String.valueOf(alarmBeforeSeconds));
+            updateTimerNextWatch();
         }
     }
 
@@ -314,27 +330,52 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         if (alarmIntervalSeconds > 0 && mConfigTable != null) {
             mConfigTable.setByName("alarmInterval",
                     String.valueOf(alarmIntervalSeconds));
+            updateTimerNextWatch();
         }
     }
 
     /**
-     * 获取将来（如明天）需要设置的日期。将来已经设置，则返回 -1
+     * 获取将来（如明天）需要设置的日期
      * 
      * @return
      */
-    public int getFutureDayNeedToSet() {
-        long now = Util.now();
-        Date tomorrow = Util.secondsToDate(now + 86400);
-        for (Watch w : mWatches) {
-            if (w.getDayInSeconds() < now)
-                continue;
+    private int getFutureDayNeedToSet() {
+        int todayId = Util.getDayIdOfTime(Util.now());
 
-            if (Util.isSameDay(tomorrow,
-                    Util.secondsToDate(w.getDayInSeconds())))
-                return -1;
+        ArrayList<Integer> dayIdArray = new ArrayList<Integer>();
+        int count = 0;
+        for (int i = 0; i < mWatches.size(); ++i) {
+            int d = Util.getDayIdOfTime(mWatches.get(i).getDayInSeconds());
+            if (d > todayId) {
+                ++count;
+                dayIdArray.add(d);
+            }
         }
 
-        return Util.getDayIdOfTime(Util.dateToSeconds(tomorrow));
+        if (count == 0)
+            return todayId + 1;
+
+        int[] dayIds = new int[count];
+        for (int i = 0; i < count; ++i) {
+            dayIds[i] = dayIdArray.get(i);
+        }
+
+        Arrays.sort(dayIds, 0, count);
+        int f = todayId + 1;
+        for (int i = 0; i < count; ++i) {
+            int d = dayIds[i];
+            if (d <= f) {
+                if (d == f) {
+                    ++f;
+                }
+
+                continue;
+            } else {
+                return f + 1;
+            }
+        }
+
+        return f;
     }
 
     public int getWatchHintSecondsInDay() {
@@ -351,6 +392,7 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         if (hintSecondsInDay > 0 && mConfigTable != null) {
             mConfigTable.setByName("futureWatchHint",
                     String.valueOf(hintSecondsInDay));
+            updateTimerFutureWatchHint();
         }
     }
 
@@ -432,4 +474,77 @@ public class ShiftDuty implements DBHelper.IDBEvent {
             // down-grade fix
         }
     }
+
+    public void startUp() {
+        updateTimerNextWatch();
+        updateTimerFutureWatchHint();
+    }
+
+    public void timeUp(int timerId) {
+        long now = Util.now();
+
+        if (timerId == 1) {
+            Alarm alarm = getNextAlarmTime();
+            if (alarm.isValidAlarm(now)) {
+                eventAlarm(alarm);
+            }
+
+            // updateTimerNextWatch();
+        }
+
+        if (timerId == 2) {
+            long hintTime = Util.getDateOfTimeInSeconds(now)
+                    + getWatchHintSecondsInDay();
+            if (now > hintTime) {
+                int dayId = getFutureDayNeedToSet();
+                if (dayId >= 0 && dayId == Util.getDayIdOfTime(now) + 1) {
+                    eventFutureWatchHint(dayId);
+                }
+            }
+
+            // updateTimerFutureWatchHint();
+        }
+    }
+
+    private void updateTimerNextWatch() {
+        long time = 0;
+        Alarm alarm = getNextAlarmTime();
+        if (alarm != null)
+            time = alarm.getNextAlarmSeconds();
+
+        eventSetTimer(time, true, 1);
+    }
+
+    private void updateTimerFutureWatchHint() {
+        long time = 0;
+        int dayId = getFutureDayNeedToSet();
+        if (dayId >= 0) {
+            time = Util.getTimeOfDayId(dayId - 1) + getWatchHintSecondsInDay();
+            long now = Util.now();
+            if (time < now + 10) {
+                time = now;
+            }
+
+        }
+
+        eventSetTimer(time, false, 2);
+    }
+
+    private void eventSetTimer(long timeInSeconds, boolean rtcWakeup,
+            int timerId) {
+        if (mEvent != null) {
+            mEvent.onSetTimer(timeInSeconds, rtcWakeup, timerId);
+        }
+    }
+
+    private void eventAlarm(Alarm alarm) {
+        if (mEvent != null)
+            mEvent.onAlarm(alarm);
+    }
+
+    private void eventFutureWatchHint(int dayId) {
+        if (mEvent != null)
+            mEvent.onFutureWatchHint(dayId);
+    }
+
 }

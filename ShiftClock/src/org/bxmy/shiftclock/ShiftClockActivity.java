@@ -1,12 +1,10 @@
 package org.bxmy.shiftclock;
 
-import org.bxmy.shiftclock.notification.NotificationFutureWatch;
+import org.bxmy.shiftclock.broadcast.BroadcastName;
 import org.bxmy.shiftclock.shiftduty.Alarm;
 import org.bxmy.shiftclock.shiftduty.ShiftDuty;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,24 +26,20 @@ public class ShiftClockActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        ShiftDuty.getInstance().init(this);
-
         binds();
-        initAlarm(this);
 
         // 启动分两种情况：闹铃启动和桌面启动
         mCurrentAlarm = ShiftDuty.getInstance().getNextAlarmTime();
         if (mCurrentAlarm != null) {
-            startAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
-                    mCurrentAlarm.getIntervalSeconds());
+            setAlarmTime(mCurrentAlarm.getNextAlarmSeconds());
             setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
-            cancelAlarmTime(this);
+            setAlarmTime(0);
             setNextWatch(null);
         }
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_SHUTDOWN);
+        filter.addAction(BroadcastName.ACTION_SHUTDOWN);
         registerReceiver(this.mShutdownReceiver, filter);
 
         checkAlarm(getIntent());
@@ -56,7 +50,6 @@ public class ShiftClockActivity extends Activity {
         disable.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cancelAlarmTime();
                 stopAlarmRing();
                 findViewById(R.id.button_pauseAlarm).setEnabled(false);
                 if (mCurrentAlarm != null) {
@@ -177,23 +170,22 @@ public class ShiftClockActivity extends Activity {
         Log.d("shiftclock", "onResume");
         super.onResume();
 
-        checkFutureDayHint();
         updateCurrentWatch();
 
         Alarm nextAlarm = ShiftDuty.getInstance().getNextAlarmTime();
         if (nextAlarm != null && nextAlarm.isSame(mCurrentAlarm)) {
             mCurrentAlarm = nextAlarm;
+            setAlarmTime(mCurrentAlarm.getNextAlarmSeconds());
             setNextWatch(mCurrentAlarm.getWatchTime());
             return;
         }
 
         mCurrentAlarm = nextAlarm;
         if (mCurrentAlarm != null) {
-            startAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
-                    mCurrentAlarm.getIntervalSeconds());
+            setAlarmTime(mCurrentAlarm.getNextAlarmSeconds());
             setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
-            cancelAlarmTime(this);
+            setAlarmTime(0);
             setNextWatch(null);
         }
     }
@@ -203,9 +195,6 @@ public class ShiftClockActivity extends Activity {
         shutdown(false);
 
         stopAlarmRing();
-        NotificationFutureWatch.getInstance().cancel();
-
-        ShiftDuty.getInstance().close();
 
         super.onDestroy();
     }
@@ -218,29 +207,18 @@ public class ShiftClockActivity extends Activity {
             long alarmTime = intent.getLongExtra("alarmTime", 0);
             if (mCurrentAlarm.isValidAlarm(alarmTime)) {
                 findViewById(R.id.button_pauseAlarm).setEnabled(true);
-                playAlarmRing();
             }
         }
     }
 
     private void updateCurrentAlarm() {
         if (mCurrentAlarm != null && !mCurrentAlarm.isDisabled()) {
-            startAlarmTime(this, mCurrentAlarm.getNextAlarmSeconds(),
-                    mCurrentAlarm.getIntervalSeconds());
             setAlarmTime(mCurrentAlarm.getNextAlarmSeconds());
             setNextWatch(mCurrentAlarm.getWatchTime());
         } else {
-            cancelAlarmTime();
             setAlarmTime(0);
             setNextWatch("");
         }
-    }
-
-    private void initAlarm(Context context) {
-        Intent intent = new Intent(ACTION_ALARM);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        this.mAlarmSender = sender;
     }
 
     private void setAlarmTime(long timeInSeconds) {
@@ -254,19 +232,6 @@ public class ShiftClockActivity extends Activity {
         }
     }
 
-    private void startAlarmTime(Context context, long timeInSeconds,
-            long intervalSeconds) {
-        Log.i("shiftclock", "set alarm " + this);
-        cancelAlarmTime(this);
-
-        initAlarm(context);
-        AlarmManager am = (AlarmManager) context
-                .getSystemService(Context.ALARM_SERVICE);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, timeInSeconds * 1000,
-                intervalSeconds * 1000, this.mAlarmSender);
-        setAlarmTime(timeInSeconds);
-    }
-
     private void setNextWatch(String date) {
         TextView nextWatch = (TextView) findViewById(R.id.text_nextWatch);
         nextWatch.setText(R.string.label_nextWatch);
@@ -274,42 +239,6 @@ public class ShiftClockActivity extends Activity {
             nextWatch.append(date);
         else
             nextWatch.append("尚未设置新的值班");
-    }
-
-    private void cancelAlarmTime() {
-        Log.i("shiftclock", "cancel alarm");
-        cancelAlarmTime(this);
-    }
-
-    private void cancelAlarmTime(Context context) {
-        if (this.mAlarmSender == null)
-            return;
-
-        AlarmManager am = (AlarmManager) context
-                .getSystemService(Context.ALARM_SERVICE);
-        am.cancel(this.mAlarmSender);
-        this.mAlarmSender = null;
-        setAlarmTime(0);
-    }
-
-    private void checkFutureDayHint() {
-        int dayId = ShiftDuty.getInstance().getFutureDayNeedToSet();
-        if (dayId < 0) {
-            NotificationFutureWatch.getInstance().cancel();
-            return;
-        }
-
-        long hintTime = Util.getTimeOfDayId(dayId - 1)
-                + ShiftDuty.getInstance().getWatchHintSecondsInDay();
-        long now = Util.now();
-        if (now < hintTime) {
-            NotificationFutureWatch.getInstance().cancel();
-            return;
-        }
-
-        Intent intent = new Intent(this, EditWatchActivity.class).putExtra(
-                "day", dayId);
-        NotificationFutureWatch.getInstance().show(dayId, intent);
     }
 
     private void updateCurrentWatch() {
@@ -324,28 +253,6 @@ public class ShiftClockActivity extends Activity {
         }
     }
 
-    public static class AlarmReceiver extends BroadcastReceiver {
-        public void onReceive(Context context, Intent intent) {
-            if (ACTION_ALARM.equals(intent.getAction())) {
-                Log.i("shiftclock", "alarm");
-                if (!isAlarmPlaying()) {
-                    Intent alarmIntent = new Intent();
-                    alarmIntent.setClass(context, ShiftClockActivity.class);
-                    alarmIntent.putExtra("alarmTime", Util.now());
-                    alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    context.startActivity(alarmIntent);
-                } else {
-                    Log.i("shiftclock", "alarm while playing");
-                }
-            }
-        }
-    }
-
-    public void playAlarmRing() {
-        ShiftClockApp.getInstance().getAlarmPlayer().playAlarmRing();
-    }
-
     public void stopAlarmRing() {
         ShiftClockApp.getInstance().getAlarmPlayer().stopAlarmRing();
     }
@@ -354,23 +261,9 @@ public class ShiftClockActivity extends Activity {
         return ShiftClockApp.getInstance().getAlarmPlayer().isPlaying();
     }
 
-    public static class BootReceiver extends BroadcastReceiver {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
-                Log.i("shiftclock", "receive boot completed");
-            } else if (action.equals(Intent.ACTION_SHUTDOWN)) {
-                Log.i("shiftclock", "receive system shutdown");
-                Intent shutdownIntent = new Intent();
-                shutdownIntent.setAction(ACTION_SHUTDOWN);
-                context.sendBroadcast(shutdownIntent);
-            }
-        }
-    }
-
     private void shutdown(boolean broadcast) {
         Log.i("shiftclock", "call shutdown() " + this);
-        synchronized (ACTION_SHUTDOWN) {
+        synchronized (BroadcastName.ACTION_SHUTDOWN) {
             if (this.mShutdownReceiver != null) {
                 unregisterReceiver(this.mShutdownReceiver);
                 this.mShutdownReceiver = null;
@@ -381,12 +274,6 @@ public class ShiftClockActivity extends Activity {
             finish();
         }
     }
-
-    private static String ACTION_ALARM = "org.bxmy.shiftclock.action.alarm";
-
-    private static String ACTION_SHUTDOWN = "org.bxmy.shiftclock.action.shutdown";
-
-    private PendingIntent mAlarmSender;
 
     private BroadcastReceiver mShutdownReceiver = new BroadcastReceiver() {
         @Override

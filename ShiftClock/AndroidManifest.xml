@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="ShiftClockActivity$AlarmReceiver" >
+        <receiver android:name=".broadcast.AlarmReceiver" >
             <receiver android:name="ShiftClockActivity$AlarmReceiver" >
                 <intent-filter>
                     <action android:name="org.bxmy.shiftclock.action.alarm" />
@@ -34,7 +34,7 @@
                 <action android:name="org.bxmy.shiftclock.action.alarm" />
             </intent-filter>
         </receiver>
-        <receiver android:name="ShiftClockActivity$BootReceiver" >
+        <receiver android:name=".broadcast.BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
