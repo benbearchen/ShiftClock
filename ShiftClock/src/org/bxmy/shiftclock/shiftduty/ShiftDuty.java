@@ -493,16 +493,7 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         }
 
         if (timerId == 2) {
-            long hintTime = Util.getDateOfTimeInSeconds(now)
-                    + getWatchHintSecondsInDay();
-            if (now > hintTime) {
-                int dayId = getFutureDayNeedToSet();
-                if (dayId >= 0 && dayId == Util.getDayIdOfTime(now) + 1) {
-                    eventFutureWatchHint(dayId);
-                }
-            }
-
-            // updateTimerFutureWatchHint();
+            checkTimerFutureWatchHint();
         }
     }
 
@@ -515,19 +506,40 @@ public class ShiftDuty implements DBHelper.IDBEvent {
         eventSetTimer(time, true, 1);
     }
 
+    private long calcFutureWatchHintTimeOfDayId(int dayId) {
+        return Util.getTimeOfDayId(dayId - 1) + getWatchHintSecondsInDay();
+    }
+
     private void updateTimerFutureWatchHint() {
         long time = 0;
         int dayId = getFutureDayNeedToSet();
         if (dayId >= 0) {
-            time = Util.getTimeOfDayId(dayId - 1) + getWatchHintSecondsInDay();
+            time = calcFutureWatchHintTimeOfDayId(dayId);
             long now = Util.now();
             if (time < now + 10) {
                 time = now;
             }
-
         }
 
         eventSetTimer(time, false, 2);
+    }
+
+    private void checkTimerFutureWatchHint() {
+        int dayId = getFutureDayNeedToSet();
+        if (dayId < 0)
+            return;
+
+        long now = Util.now();
+        long futureHintTime = calcFutureWatchHintTimeOfDayId(dayId);
+        long beginOfFutureDay = Util.getTimeOfDayId(dayId);
+        long nextHintTime = futureHintTime;
+        if (now > futureHintTime && now < beginOfFutureDay) {
+            eventFutureWatchHint(dayId);
+            int hintAgainSeconds = 3600;
+            nextHintTime = Math.min(now + hintAgainSeconds, beginOfFutureDay);
+        }
+
+        eventSetTimer(nextHintTime, false, 2);
     }
 
     private void eventSetTimer(long timeInSeconds, boolean rtcWakeup,
